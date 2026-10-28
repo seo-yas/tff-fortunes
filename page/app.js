@@ -16,8 +16,15 @@ const store = {
 
 /* ---------- card art ---------- */
 let catArt = new Set();
-// The real engine loads its line bank (lines.json) once; the stub has none to load.
-const bankReady = (engine.loadBank ? engine.loadBank() : Promise.resolve()).catch(() => {});
+// The real engine loads its line bank (lines.json) once; the stub has none to load. A failed load is retried on the next draw.
+let bankLoad = null;
+function ensureBank() {
+  if (!engine.loadBank) return Promise.resolve();
+  if (!bankLoad) bankLoad = engine.loadBank().catch((e) => { bankLoad = null; throw e; });
+  return bankLoad;
+}
+ensureBank().catch(() => {});
+const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
 const artReady = fetch('cards/cats/index.json').then((r) => (r.ok ? r.json() : [])).then((ids) => { catArt = new Set(ids); }).catch(() => {});
 
 function dishFor(cardId, dishes) {
@@ -156,6 +163,8 @@ function validate(v) {
   for (const [k, isBad] of Object.entries(bad)) {
     const err = $(`.error[data-for="${k}"]`);
     if (err) err.hidden = !isBad;
+    const ctl = k === 'rating' ? $('#rating') : $(`[name="${k}"]`);
+    ctl?.setAttribute('aria-invalid', isBad ? 'true' : 'false');
   }
   const first = Object.keys(bad).find((k) => bad[k]);
   if (first) {
@@ -240,16 +249,35 @@ async function shuffle() {
   await wait(700);
 }
 
+let busy = false;
+function setBusy(on) {
+  busy = on;
+  document.querySelectorAll('#reading-form [type="submit"], #again').forEach((b) => { b.disabled = on; });
+}
+
 async function reveal(v, seed, source) {
-  await Promise.all([artReady, bankReady]);
-  const fortune = cast(v, seed);
-  current = { v, fortune };
-  await shuffle();
-  render(v, fortune);
-  $('#flip').classList.remove('open');
-  show('result');
-  requestAnimationFrame(() => setTimeout(() => $('#flip').classList.add('open'), reduceMotion ? 0 : 250));
-  submit(v, fortune, source);
+  if (busy) return; // one draw at a time: a double tap must not make two readings and two rows
+  setBusy(true);
+  $('#draw-error').hidden = true;
+  try {
+    await withTimeout(artReady, 1500); // art is optional: placeholders cover a slow index
+    await ensureBank();
+    const fortune = cast(v, seed);
+    current = { v, fortune };
+    readyFile = null;
+    await submit(v, fortune, source); // on the phone before any animation: closing the page now loses nothing
+    await shuffle();
+    render(v, fortune);
+    $('#flip').classList.remove('open');
+    show('result');
+    requestAnimationFrame(() => setTimeout(() => $('#flip').classList.add('open'), reduceMotion ? 0 : 250));
+    prepareImage();
+  } catch {
+    show('form');
+    $('#draw-error').hidden = false;
+  } finally {
+    setBusy(false);
+  }
 }
 
 /* ---------- submissions: queue first, send when possible; never lose a row ---------- */
@@ -280,41 +308,63 @@ function row(v, fortune, source) {
   };
 }
 
+// Queue in localStorage (memory if storage is refused), under a cross-tab lock where the browser has Web Locks.
+const mem = [];
+const keyOf = (r) => `${r.email}|${r.fortune_seed}|${r.submitted_at}`;
+const withLock = (fn) => (navigator.locks?.request ? navigator.locks.request('fff-queue', fn) : fn());
+
 function submit(v, fortune, source) {
-  const q = store.get(QUEUE_KEY, []);
-  q.push(row(v, fortune, source));
-  store.set(QUEUE_KEY, q);
-  flush();
+  const r = row(v, fortune, source);
+  return Promise.resolve(withLock(() => {
+    const q = store.get(QUEUE_KEY, []);
+    q.push(r);
+    if (!store.set(QUEUE_KEY, q)) mem.push(r);
+  })).then(() => { flush(); });
 }
 
 // Test seam: the Playwright gate points the page at a fake endpoint without touching config.js.
 const endpoint = () => globalThis.__FFF_ENDPOINT || SHEET_ENDPOINT;
 
-let flushing = false;
+function updateNote() {
+  const pending = store.get(QUEUE_KEY, []).length + mem.length;
+  $('#queue-note').hidden = !(pending && (!navigator.onLine || retryTimer));
+}
+
+// Send queued rows one at a time; a row leaves the queue only when the Sheet answers ok (or says it already has it).
+// text/plain is a "simple" request (no preflight); Apps Script's reply carries Access-Control-Allow-Origin, so it is readable.
+let flushing = false, retryTimer = null, backoff = 2000;
 async function flush() {
-  if (flushing) return;
-  const q = store.get(QUEUE_KEY, []);
   const url = endpoint();
-  $('#queue-note').hidden = !(q.length && !navigator.onLine);
-  if (!q.length || !url || !navigator.onLine) return;
+  if (flushing || !url || !navigator.onLine) { updateNote(); return; }
   flushing = true;
+  clearTimeout(retryTimer); retryTimer = null;
   try {
-    while (true) {
-      const [next] = store.get(QUEUE_KEY, []);
-      if (!next) break;
-      // text/plain + no-cors: a "simple" request, so no preflight; Apps Script dedupes retries.
-      await fetch(url, { method: 'POST', mode: 'no-cors', body: JSON.stringify(next), keepalive: true });
-      const rest = store.get(QUEUE_KEY, []);
-      store.set(QUEUE_KEY, rest.filter((r) => !(r.fortune_seed === next.fortune_seed && r.email === next.email && r.submitted_at === next.submitted_at)));
-    }
+    await withLock(async () => {
+      while (true) {
+        const stored = store.get(QUEUE_KEY, []);
+        const next = stored[0] || mem[0];
+        if (!next) break;
+        const res = await fetch(url, { method: 'POST', body: JSON.stringify(next) });
+        const data = await res.json();
+        if (!data.ok && data.retry !== false) throw new Error(data.error || 'not ok'); // retry:false = a row the Sheet will never take
+        if (stored[0]) {
+          // cannot delete it: stop rather than resend the same row in a loop
+          if (!store.set(QUEUE_KEY, store.get(QUEUE_KEY, []).filter((r) => keyOf(r) !== keyOf(next)))) break;
+        } else mem.shift();
+      }
+    });
+    backoff = 2000;
   } catch {
-    // offline or blocked: the rows stay queued; the next online event or page load sends them
+    retryTimer = setTimeout(flush, backoff); // weak signal: try again, 2 s doubling to a minute
+    backoff = Math.min(backoff * 2, 60_000);
   } finally {
     flushing = false;
-    $('#queue-note').hidden = !(store.get(QUEUE_KEY, []).length && !navigator.onLine);
+    updateNote();
   }
 }
 addEventListener('online', flush);
+addEventListener('pageshow', flush);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') flush(); });
 
 /* ---------- save the card as a phone-story image ---------- */
 function loadImg(src) {
@@ -408,26 +458,50 @@ async function cardImage() {
   return new Promise((r) => c.toBlob(r, 'image/png'));
 }
 
+// Safari opens the share sheet only from a fresh tap, so the image is made as soon as the card is shown, not on the tap.
+let readyFile = null;
+function prepareImage() {
+  const f = current;
+  cardImage().then((blob) => {
+    if (current === f && blob) readyFile = new File([blob], `freckled-fork-fortune-${f.fortune.seed}.png`, { type: 'image/png' });
+  }).catch(() => {});
+}
+
+function download(file) {
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(file), download: file.name });
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+
 async function save() {
+  let file = readyFile;
+  if (file && navigator.canShare?.({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: 'My Freckled Fork fortune' }); return; }
+    catch (e) { if (e?.name === 'AbortError') return; }
+  }
   const btn = $('#save');
   btn.disabled = true;
   try {
-    const blob = await cardImage();
-    const file = new File([blob], `freckled-fork-fortune-${current.fortune.seed}.png`, { type: 'image/png' });
-    // On phones the share sheet is the only reliable way into Photos; elsewhere, a download.
-    if (navigator.canShare?.({ files: [file] })) {
-      try { await navigator.share({ files: [file], title: 'My Freckled Fork fortune' }); return; }
-      catch (e) { if (e?.name === 'AbortError') return; }
+    if (!file) {
+      const blob = await cardImage();
+      file = new File([blob], `freckled-fork-fortune-${current.fortune.seed}.png`, { type: 'image/png' });
+      readyFile = file;
     }
-    const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(file), download: file.name });
-    document.body.append(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    download(file);
   } finally {
     btn.disabled = false;
   }
 }
 
 /* ---------- tilt parallax (pointer and phone tilt), off under reduced motion ---------- */
+let orient = null;
+function askTilt() {
+  if (!orient || typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission !== 'function') return;
+  DeviceOrientationEvent.requestPermission()
+    .then((r) => { if (r === 'granted') addEventListener('deviceorientation', orient, { passive: true }); })
+    .catch(() => {});
+}
+
 function tilt() {
   if (reduceMotion) return;
   const set = (rx, ry) => document.querySelectorAll('.tilt').forEach((el) => {
@@ -437,17 +511,21 @@ function tilt() {
     if (e.pointerType !== 'mouse') return;
     set(((e.clientY / innerHeight) - .5) * -10, ((e.clientX / innerWidth) - .5) * 12);
   }, { passive: true });
-  addEventListener('deviceorientation', (e) => {
+  orient = (e) => {
     if (e.beta == null) return;
     set(Math.max(-8, Math.min(8, (e.beta - 45) / 4)), Math.max(-10, Math.min(10, e.gamma / 3)));
-  }, { passive: true });
+  };
+  // iOS asks once, from a tap (askTilt); elsewhere the events just arrive.
+  if (typeof DeviceOrientationEvent === 'undefined' || typeof DeviceOrientationEvent.requestPermission !== 'function') {
+    addEventListener('deviceorientation', orient, { passive: true });
+  }
 }
 
 /* ---------- wire up ---------- */
 function init() {
   buildForm();
   Object.entries(LINKS).forEach(([k, href]) => { const a = $(`#l-${k}`) || (k === 'home' && $('#home')); if (a) a.href = href; });
-  document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => show(b.dataset.go)));
+  document.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => { askTilt(); show(b.dataset.go); }));
   $('#reading-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const v = readForm();

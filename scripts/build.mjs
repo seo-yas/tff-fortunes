@@ -12,6 +12,11 @@ cpSync(real ? ENGINE : 'page/engine-stub', `${out}/engine`, { recursive: true, f
 writeFileSync(`${out}/engine/SOURCE.txt`, real ? 'engine/ (real)\n' : 'page/engine-stub (stub)\n');
 // A fresh cache name per build, so a phone that loaded an older deploy swaps the whole cache on its next visit.
 const stamp = `fff-${process.env.GITHUB_SHA ? process.env.GITHUB_SHA.slice(0, 8) : Date.now().toString(36)}`;
-writeFileSync(`${out}/sw.js`, readFileSync(`${out}/sw.js`, 'utf8').replace("const VERSION = 'fff-v1';", `const VERSION = '${stamp}';`));
+// The engine's data files (the real engine's lines.json, menu.json) are part of the required precache: a draw needs them offline.
+const engineFiles = readdirSync(`${out}/engine`).filter((f) => f.endsWith('.json')).map((f) => `engine/${f}`);
+let sw = readFileSync(`${out}/sw.js`, 'utf8');
+sw = sw.replace("const VERSION = 'fff-v1';", `const VERSION = '${stamp}';`);
+sw = sw.replace('const ENGINE_FILES = [];', `const ENGINE_FILES = ${JSON.stringify(engineFiles)};`);
+writeFileSync(`${out}/sw.js`, sw);
 if (existsSync('CNAME')) cpSync('CNAME', `${out}/CNAME`);
 console.log(`built ${out} with ${real ? 'real' : 'stub'} engine`);

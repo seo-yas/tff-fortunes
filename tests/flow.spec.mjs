@@ -11,7 +11,8 @@ async function mockSheet(page) {
   await page.addInitScript((u) => { globalThis.__FFF_ENDPOINT = u; }, ENDPOINT);
   await page.route(ENDPOINT, async (route) => {
     posts.push(JSON.parse(route.request().postData()));
-    await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+    // Apps Script's reply (after its redirect) carries Access-Control-Allow-Origin: *, so the page can read it
+    await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{"ok":true}' });
   });
   return posts;
 }
@@ -64,6 +65,33 @@ test('pull again: a new seed, same guest, logged as pull-again', async ({ page }
   await expect.poll(() => posts.length).toBe(2);
   expect(posts[1].source).toBe('pull-again');
   expect(posts[1].email).toBe('marguerite@example.com');
+});
+
+test('a row leaves the phone only when the Sheet says ok: a failed write is kept and retried', async ({ page }) => {
+  await page.addInitScript((u) => { globalThis.__FFF_ENDPOINT = u; }, ENDPOINT);
+  let calls = 0;
+  await page.route(ENDPOINT, async (route) => {
+    calls++;
+    const ok = calls > 1; // the first write fails (a lock timeout, say), the retry lands
+    await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(ok ? { ok: true } : { ok: false, error: 'lock timeout' }) });
+  });
+  await page.goto('/');
+  await fillAndRead(page);
+  await expect.poll(() => calls, { timeout: 10_000 }).toBeGreaterThan(1);
+  await expect.poll(() => page.evaluate(() => window.__fff.queue().length)).toBe(0);
+});
+
+test('a double tap makes one reading and one row, stored before the shuffle', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Pull a card' }).click();
+  await page.getByLabel('Your name').fill('Ines');
+  await page.locator('#rating label', { hasText: 'Good' }).first().click();
+  const btn = page.getByRole('button', { name: 'Read my cards' });
+  await btn.evaluate((b) => { b.click(); b.click(); });
+  await expect(page.locator('#draw')).toBeVisible();
+  expect(await page.evaluate(() => window.__fff.queue().length)).toBe(1); // queued while the deck is still shuffling
+  await expect(page.locator('#flip')).toHaveClass(/open/, { timeout: 15_000 });
+  expect(await page.evaluate(() => window.__fff.queue().length)).toBe(1);
 });
 
 test('validation: no name, no rating', async ({ page }) => {

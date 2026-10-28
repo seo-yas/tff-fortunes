@@ -64,7 +64,7 @@ img { max-width: 100%; height: auto; display: block; }
 @keyframes enter { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 
 /* Landing */
-#landing { min-height: calc(100dvh - 120px); display: grid; align-content: center; gap: 28px; }
+#landing { min-height: calc(100vh - 120px); min-height: calc(100dvh - 120px); display: grid; align-content: center; gap: 28px; }
 .landing-card { width: min(62vw, 260px); margin: 0 auto; transform: rotate(-4deg); }
 .landing-card img, .face img { border-radius: var(--radius); box-shadow: 0 24px 60px rgba(10, 6, 14, .6), 0 0 0 1px rgba(212, 180, 105, .35); }
 .landing-card img { animation: hover 5s ease-in-out infinite; }
@@ -82,7 +82,7 @@ h1 em { display: block; font-style: italic; font-weight: 400; color: var(--gilt)
 .btn:active { transform: scale(.98); }
 .btn.primary { background: var(--gilt); color: #241b14; border-color: var(--gilt); }
 .btn.ghost { border-color: transparent; text-decoration: underline; text-underline-offset: 4px; color: var(--cream-dim); }
-.btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .chip:has(input:focus-visible), .rating label:has(input:focus-visible) {
+.dish > label:has(input:focus-visible), .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .chip:has(input:focus-visible), .rating label:has(input:focus-visible) {
   outline: 2px solid var(--gilt); outline-offset: 2px; }
 
 /* Form */
@@ -124,10 +124,11 @@ textarea { resize: vertical; }
 .rating label { display: grid; place-items: center; text-align: center; min-height: 56px; padding: 4px; border-radius: 10px;
   border: 1px solid rgba(250, 246, 240, .25); font-weight: 400; font-size: .86rem; line-height: 1.15; cursor: pointer; }
 .rating input { position: absolute; opacity: 0; }
-.rating label:has(input:checked) { background: var(--pink); border-color: var(--pink); color: #fff8fb; font-weight: 600; }
+/* the selected step: a deeper pink, so its small label passes 4.5:1 */
+.rating label:has(input:checked) { background: #b42d62; border-color: #b42d62; color: #fff8fb; font-weight: 600; }
 
 /* Shuffle and draw */
-#draw { min-height: calc(100dvh - 120px); display: grid; align-content: center; justify-items: center; gap: 28px; }
+#draw { min-height: calc(100vh - 120px); min-height: calc(100dvh - 120px); display: grid; align-content: center; justify-items: center; gap: 28px; }
 .draw-line { font-family: 'Fraunces', serif; font-style: italic; font-size: 1.4rem; color: var(--gilt); margin: 0; }
 .deck { position: relative; width: 170px; height: 255px; }
 .deck .c { position: absolute; inset: 0; border-radius: 10px; background: url(cards/back.webp) center/cover;

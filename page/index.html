@@ -39,14 +39,14 @@
 
         <div class="field">
           <label for="f-name">Your name</label>
-          <input id="f-name" name="name" autocomplete="given-name" required maxlength="60">
-          <p class="error" data-for="name" hidden>The cats need a name to read for.</p>
+          <input id="f-name" name="name" autocomplete="given-name" required maxlength="60" aria-describedby="e-name">
+          <p class="error" id="e-name" data-for="name" hidden>The cats need a name to read for.</p>
         </div>
 
         <div class="field">
           <label for="f-email">Email</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120">
-          <p class="error" data-for="email" hidden>That email looks off. Check it or leave it blank.</p>
+          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="e-email">
+          <p class="error" id="e-email" data-for="email" hidden>That email looks off. Check it or leave it blank.</p>
         </div>
 
         <label class="check">
@@ -71,8 +71,8 @@
 
         <fieldset class="field">
           <legend>How was it?</legend>
-          <div class="rating" id="rating"></div>
-          <p class="error" data-for="rating" hidden>Pick one. Meh is allowed.</p>
+          <div class="rating" id="rating" role="radiogroup" aria-label="How was it?" aria-required="true" aria-describedby="e-rating"></div>
+          <p class="error" id="e-rating" data-for="rating" hidden>Pick one. Meh is allowed.</p>
         </fieldset>
 
         <div class="field">
@@ -85,6 +85,7 @@
           <input id="f-website" name="website" tabindex="-1" autocomplete="off">
         </div>
 
+        <p class="error" id="draw-error" role="alert" hidden>The cards got stuck. Check your signal and tap Read my cards again.</p>
         <button class="btn primary" type="submit">Read my cards</button>
       </form>
     </section>
