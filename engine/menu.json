@@ -1,0 +1,44 @@
+[
+  {
+    "id": "brodo",
+    "name": "The Devil Wears Brodo",
+    "desc": "French onion sipping broth, charred apple cider, roasted garlic, crispy shallots"
+  },
+  {
+    "id": "beetlejuice",
+    "name": "Beet*lejuice",
+    "desc": "Blood-red roasted beet and walnut muhammara, tahini swirl, bat chips"
+  },
+  {
+    "id": "ichabod",
+    "name": "Ichabod's Crunch",
+    "desc": "Apple-butter mustard, pickled red onion, garlic aioli, cider doughnut crumbles",
+    "ways": [
+      "Chicken sausage",
+      "Vegan"
+    ]
+  },
+  {
+    "id": "hex",
+    "name": "Hex & the City",
+    "desc": "NYC street-cart red onion jam, spicy brown mustard, sauerkraut, nigella",
+    "ways": [
+      "Beef",
+      "Vegan"
+    ]
+  },
+  {
+    "id": "aloo",
+    "name": "Aloo Boo",
+    "desc": "Spiced smashed potatoes, tamarind-date glaze, mint-cilantro aioli, fried shallots, sev",
+    "ways": [
+      "Beef",
+      "Vegan"
+    ]
+  },
+  {
+    "id": "ghosted",
+    "name": "Ghosted at the Motel",
+    "desc": "Apple-cranberry cider dump cake, cranberry-rosemary syrup, spiced maple pepitas"
+  }
+]
