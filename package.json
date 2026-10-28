@@ -1,0 +1,13 @@
+{
+  "name": "tff-fortunes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "gate": "node scripts/build.mjs && playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1",
+    "qrcode": "1.5.4"
+  }
+}

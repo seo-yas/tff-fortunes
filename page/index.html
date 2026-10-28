@@ -1,1 +1,136 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Freckled Fork Fortunes</title></head><body style="background:#1d1a24;color:#faf6f0;font-family:serif;display:grid;place-items:center;min-height:100vh;margin:0"><p>The cards are being shuffled. Back Friday.</p></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#1d1824">
+  <meta name="description" content="Tell the cats what you ate. They will read your cards.">
+  <title>Freckled Fork Fortunes</title>
+  <link rel="preload" href="fonts/fraunces.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="cards/back.webp" as="image" type="image/webp">
+  <link rel="icon" href="img/logo-ff-white.png">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <div class="room" aria-hidden="true">
+    <div class="candle"></div>
+    <div class="moths"><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+
+  <main>
+    <!-- 1. Landing -->
+    <section class="screen" id="landing" data-active>
+      <div class="landing-card tilt">
+        <img src="cards/back.webp" alt="The Freckled Fork card back" width="560" height="840" fetchpriority="high">
+      </div>
+      <div class="landing-copy">
+        <h1>Freckled Fork <em>Fortunes</em></h1>
+        <p>Tell Sgt. Peppers and Sgt. Sushi what you ate. They will read your cards.</p>
+        <button class="btn primary" data-go="form">Pull a card</button>
+      </div>
+    </section>
+
+    <!-- 2. Form -->
+    <section class="screen" id="form" hidden>
+      <form id="reading-form" novalidate>
+        <h2>Before the cards</h2>
+
+        <div class="field">
+          <label for="f-name">Your name</label>
+          <input id="f-name" name="name" autocomplete="given-name" required maxlength="60">
+          <p class="error" data-for="name" hidden>The cats need a name to read for.</p>
+        </div>
+
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120">
+          <p class="error" data-for="email" hidden>That email looks off. Check it or leave it blank.</p>
+        </div>
+
+        <label class="check">
+          <input type="checkbox" name="news" checked>
+          <span>Send me news from The Freckled Fork</span>
+        </label>
+
+        <fieldset class="field">
+          <legend>Your birthday</legend>
+          <div class="row">
+            <label class="sr" for="f-month">Month</label>
+            <select id="f-month" name="month"><option value="">Month</option></select>
+            <label class="sr" for="f-day">Day</label>
+            <select id="f-day" name="day"><option value="">Day</option></select>
+          </div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>What did you eat?</legend>
+          <div class="dishes" id="dishes"></div>
+        </fieldset>
+
+        <fieldset class="field">
+          <legend>How was it?</legend>
+          <div class="rating" id="rating"></div>
+          <p class="error" data-for="rating" hidden>Pick one. Meh is allowed.</p>
+        </fieldset>
+
+        <div class="field">
+          <label for="f-note">Anything for Jess? <span class="opt">(optional)</span></label>
+          <textarea id="f-note" name="note" rows="2" maxlength="500"></textarea>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Leave this empty</label>
+          <input id="f-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn primary" type="submit">Read my cards</button>
+      </form>
+    </section>
+
+    <!-- 3. Shuffle and draw -->
+    <section class="screen" id="draw" hidden>
+      <p class="draw-line" aria-live="polite">The cats are shuffling</p>
+      <div class="deck" id="deck"></div>
+    </section>
+
+    <!-- 4. The card -->
+    <section class="screen" id="result" hidden>
+      <div class="flip tilt" id="flip">
+        <div class="flip-inner">
+          <div class="face back"><img src="cards/back.webp" alt="" width="560" height="840"></div>
+          <div class="face front" id="card-front"></div>
+        </div>
+      </div>
+
+      <article class="reading" id="reading" aria-live="polite">
+        <p class="for">A reading for <strong id="r-name"></strong></p>
+        <h2 id="r-title"></h2>
+        <div id="r-lines"></div>
+        <aside class="omen">
+          <h3>Pantry omen</h3>
+          <p id="r-omen"></p>
+        </aside>
+        <div class="second" id="r-second"></div>
+      </article>
+
+      <div class="actions">
+        <button class="btn primary" id="save">Save my card</button>
+        <button class="btn" id="again">Pull again</button>
+        <a class="btn ghost" id="home" href="https://thefreckledfork.com/">Back to thefreckledfork.com</a>
+      </div>
+      <nav class="socials" aria-label="The Freckled Fork elsewhere">
+        <a id="l-instagram" href="https://www.instagram.com/the.freckled.fork/">Instagram</a>
+        <a id="l-substack" href="https://tablebetween.thefreckledfork.com/">Substack</a>
+        <a id="l-facebook" href="https://www.facebook.com/The.Freckled.Fork/">Facebook</a>
+      </nav>
+      <p class="queue-note" id="queue-note" hidden>No signal right now. Your card is saved on this phone and will send itself when you are back online.</p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <img src="img/logo-ff-white.png" alt="The Freckled Fork" width="48" height="57">
+  </footer>
+</body>
+</html>

@@ -1,0 +1,36 @@
+// Pull the 24 cat cards from the vault art folder into page/cards/cats/ as 560x840 webp.
+// usage: node scripts/ingest-cats.mjs [artDir]
+// Takes, per card id, the file named in manifest.json if present, else the newest <id>*.png|jpg|webp.
+import { readdirSync, existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
+import { execFileSync } from 'node:child_process';
+
+const ART = process.argv[2] || 'C:/TFF/Haque Brain v2/04-The-Freckled-Fork/brand/photos/arcana-source/generated/fortunes-r1';
+const OUT = 'page/cards/cats';
+const IDS = ['the-fool', 'the-magician', 'the-high-priestess', 'the-empress', 'the-emperor', 'the-hierophant', 'the-lovers',
+  'the-chariot', 'strength', 'the-hermit', 'wheel-of-fortune', 'justice', 'the-hanged-one', 'death', 'temperance', 'the-devil',
+  'the-tower', 'the-star', 'the-moon', 'the-sun', 'judgement', 'the-world', 'the-pet-parade', 'the-pass'];
+
+let manifest = {};
+const mf = join(ART, 'manifest.json');
+if (existsSync(mf)) {
+  const m = JSON.parse(readFileSync(mf, 'utf8'));
+  // accept {id: file}, {cards: [{id, file}]} or [{id, file|path}]
+  const list = Array.isArray(m) ? m : Array.isArray(m.cards) ? m.cards : Object.entries(m).map(([id, file]) => ({ id, file }));
+  for (const c of list) if (c && c.id) manifest[c.id] = c.file || c.path || c.filename;
+}
+const files = readdirSync(ART).filter((f) => /\.(png|jpe?g|webp)$/i.test(f));
+const done = [], missing = [];
+for (const id of IDS) {
+  let src = manifest[id] && join(ART, manifest[id]);
+  if (!src || !existsSync(src)) {
+    const cands = files.filter((f) => f.toLowerCase().startsWith(id)).map((f) => join(ART, f));
+    cands.sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs);
+    src = cands[0];
+  }
+  if (!src) { missing.push(id); continue; }
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-vf', 'scale=560:840:force_original_aspect_ratio=increase,crop=560:840', '-c:v', 'libwebp', '-quality', '80', join(OUT, `${id}.webp`)]);
+  done.push(id);
+}
+writeFileSync(join(OUT, 'index.json'), JSON.stringify(done) + '\n');
+console.log(`ingested ${done.length}/24; missing: ${missing.join(', ') || 'none'}`);
