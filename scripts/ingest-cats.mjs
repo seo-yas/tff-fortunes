@@ -1,4 +1,4 @@
-// Pull the 24 cat cards from the vault art folder into page/cards/cats/ as 560x840 webp.
+// Pull the 24 cat cards from the vault art folder into page/cards/cats/ as 480x720 AVIF (engraved hatching: AVIF is ~55 KB, WebP ~80 KB).
 // usage: node scripts/ingest-cats.mjs [artDir]
 // Takes, per card id, the file named in manifest.json if present, else the newest <id>*.png|jpg|webp.
 import { readdirSync, existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
@@ -29,7 +29,7 @@ for (const id of IDS) {
     src = cands[0];
   }
   if (!src) { missing.push(id); continue; }
-  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-vf', 'scale=560:840:force_original_aspect_ratio=increase,crop=560:840', '-c:v', 'libwebp', '-quality', '80', join(OUT, `${id}.webp`)]);
+  execFileSync('ffmpeg', ['-v', 'error', '-y', '-i', src, '-vf', 'scale=480:720:force_original_aspect_ratio=increase,crop=480:720,format=yuv420p', '-c:v', 'libaom-av1', '-still-picture', '1', '-crf', '38', '-cpu-used', '4', join(OUT, `${id}.avif`)]);
   done.push(id);
 }
 writeFileSync(join(OUT, 'index.json'), JSON.stringify(done) + '\n');

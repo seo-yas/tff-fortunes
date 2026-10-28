@@ -142,6 +142,12 @@ textarea { resize: vertical; }
 .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .face.front { transform: rotateY(180deg); }
 .face img { width: 100%; height: 100%; object-fit: cover; }
+/* Cat card lettering, placed in the painted boxes (positions match BOX in app.js). */
+.art { position: relative; width: 100%; height: 100%; container-type: inline-size; }
+.art img { width: 100%; height: 100%; object-fit: cover; border-radius: var(--radius); box-shadow: 0 24px 60px rgba(10, 6, 14, .6), 0 0 0 1px rgba(212, 180, 105, .35); }
+.ov { position: absolute; display: grid; place-items: center; color: var(--ink); font-family: 'Fraunces', serif; font-weight: 600; text-align: center; line-height: 1; }
+.ov.num { left: 15.6%; top: 1.1%; width: 68.8%; height: 7%; font-size: 7cqw; }
+.ov.title { left: 10.8%; top: 87.8%; width: 78.3%; height: 8.5%; font-size: 6.2cqw; letter-spacing: .06em; text-transform: uppercase; }
 .tilt { transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .3s ease-out; }
 
 /* Placeholder card: used when art is missing (never a broken image). */

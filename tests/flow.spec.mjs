@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { writeFileSync } from 'node:fs';
 
 const ENDPOINT = 'https://script.google.com/macros/s/TEST/exec';
 const COLUMNS = ['submitted_at', 'name', 'email', 'news_opt_in', 'birthday', 'sign', 'rating', 'dishes',
@@ -132,6 +133,23 @@ test.describe('reduced motion', () => {
     expect(anim).toBe('none');
     await page.screenshot({ path: 'test-results/reduced-motion-result.png', fullPage: true });
   });
+});
+
+test('no dish: a cat card, lettered in its boxes, and saved with the lettering', async ({ page }) => {
+  await page.goto('/');
+  await fillAndRead(page, { dishes: [] });
+  const img = page.locator('#card-front .art img');
+  await expect(img).toBeVisible();
+  await expect.poll(() => img.evaluate((i) => i.complete && i.naturalWidth)).toBe(480);
+  await expect(page.locator('#card-front .ov.title')).not.toBeEmpty();
+  await page.waitForTimeout(1300);
+  await page.screenshot({ path: 'test-results/05-cat-card.png' });
+  const blob = await page.evaluate(async () => {
+    const b = await window.__fff.cardImage();
+    const r = new FileReader();
+    return new Promise((res) => { r.onload = () => res(r.result); r.readAsDataURL(b); });
+  });
+  writeFileSync('test-results/saved-cat-card.png', Buffer.from(blob.split(',')[1], 'base64'));
 });
 
 test('screens for review', async ({ page }) => {

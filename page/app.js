@@ -34,7 +34,7 @@ function dishFor(cardId, dishes) {
 function artSrc(cardId, dishes = []) {
   const dish = dishFor(cardId, dishes);
   if (dish) return `cards/dish/${dish.id}.webp`;
-  return catArt.has(cardId) ? `cards/cats/${cardId}.webp` : null;
+  return catArt.has(cardId) ? `cards/cats/${cardId}.avif` : null;
 }
 
 function placeholder(numeral, title) {
@@ -49,16 +49,32 @@ function placeholder(numeral, title) {
 }
 
 // An <img> that turns into a placeholder if the file is missing; a missing card never breaks a draw.
-function cardFace(cardId, numeral, title, dishes) {
+// Cat cards are painted with empty boxes: the numeral and title are lettered on top (overlay).
+function cardFace(cardId, numeral, title, dishes, overlay = true) {
   const src = artSrc(cardId, dishes);
   if (!src) return placeholder(numeral, title);
-  const img = new Image(560, 840);
+  const img = new Image(480, 720);
   img.alt = title;
   img.decoding = 'async';
   img.src = src;
-  img.onerror = () => img.replaceWith(placeholder(numeral, title));
-  return img;
+  const isCat = src.startsWith('cards/cats/');
+  if (!isCat || !overlay) {
+    img.onerror = () => img.replaceWith(placeholder(numeral, title));
+    return img;
+  }
+  const art = document.createElement('div');
+  art.className = 'art';
+  const num = Object.assign(document.createElement('span'), { className: 'ov num', textContent: numeral || '' });
+  const t = Object.assign(document.createElement('span'), { className: 'ov title', textContent: title || '' });
+  num.setAttribute('aria-hidden', 'true');
+  t.setAttribute('aria-hidden', 'true');
+  art.append(img, num, t);
+  img.onerror = () => art.replaceWith(placeholder(numeral, title));
+  return art;
 }
+
+// Where the empty boxes sit on the painted cat cards, as fractions of the card (measured on the r1 art).
+const BOX = { num: { x: .156, y: .011, w: .688, h: .07 }, title: { x: .108, y: .878, w: .783, h: .085 } };
 
 /* ---------- screens ---------- */
 function show(id) {
@@ -198,7 +214,7 @@ function render(v, fortune) {
   if (c2 && c2.cardId !== fortune.cardId) {
     const mini = document.createElement('div');
     mini.className = 'mini';
-    mini.append(cardFace(c2.cardId, c2.numeral, c2.title, []));
+    mini.append(cardFace(c2.cardId, c2.numeral, c2.title, [], false));
     const p = document.createElement('p');
     p.textContent = c2.name ? `${c2.name} pulled your second card: ${c2.title}.` : `Your second card: ${c2.title}.`;
     second.append(mini, p);
@@ -347,7 +363,19 @@ async function cardImage() {
   const art = await loadImg(artSrc(fortune.cardId, v.dishes));
   x.save();
   x.shadowColor = 'rgba(0,0,0,.55)'; x.shadowBlur = 50; x.shadowOffsetY = 20;
-  if (art) x.drawImage(art, cx, cy, cw, ch);
+  if (art) {
+    x.drawImage(art, cx, cy, cw, ch);
+    if (!dishFor(fortune.cardId, v.dishes)) {
+      x.shadowColor = 'transparent';
+      x.fillStyle = '#33302e';
+      x.textBaseline = 'middle';
+      x.font = '600 40px Fraunces, serif';
+      x.fillText(fortune.numeral || '', W / 2, cy + (BOX.num.y + BOX.num.h / 2) * ch, BOX.num.w * cw - 20);
+      x.font = '600 38px Fraunces, serif';
+      x.fillText((fortune.title || '').toUpperCase(), W / 2, cy + (BOX.title.y + BOX.title.h / 2) * ch, BOX.title.w * cw - 30);
+      x.textBaseline = 'alphabetic';
+    }
+  }
   else {
     x.fillStyle = '#f6efe3'; x.fillRect(cx, cy, cw, ch);
     x.shadowColor = 'transparent';

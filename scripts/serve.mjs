@@ -7,7 +7,7 @@ const ROOT = '_site';
 const PORT = +process.argv[2] || 4322;
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
-  '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml',
+  '.json': 'application/json', '.webp': 'image/webp', '.avif': 'image/avif', '.png': 'image/png', '.svg': 'image/svg+xml',
   '.woff2': 'font/woff2', '.txt': 'text/plain',
 };
 

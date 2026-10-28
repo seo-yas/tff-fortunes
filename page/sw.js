@@ -17,7 +17,7 @@ self.addEventListener('install', (e) => {
     const extra = ['engine/lines.json', 'engine/menu.json'];
     try {
       const ids = await (await fetch('cards/cats/index.json')).json();
-      ids.forEach((id) => extra.push(`cards/cats/${id}.webp`));
+      ids.forEach((id) => extra.push(`cards/cats/${id}.avif`));
     } catch {}
     await Promise.all(extra.map((u) => cache.add(u).catch(() => {})));
     self.skipWaiting();
