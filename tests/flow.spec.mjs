@@ -5,6 +5,13 @@ const ENDPOINT = 'https://script.google.com/macros/s/TEST/exec';
 const COLUMNS = ['submitted_at', 'name', 'email', 'news_opt_in', 'birthday', 'sign', 'rating', 'dishes',
   'dish_ways', 'note', 'card_id', 'card_title', 'fortune_seed', 'device', 'source'];
 
+// No test may reach the real Sheet: every Apps Script request is answered here unless a test mocks it itself
+// (a test's own page.route is registered later, so it takes precedence).
+test.beforeEach(async ({ page }) => {
+  await page.route(/script\.google(usercontent)?\.com/, (route) =>
+    route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{"ok":true}' }));
+});
+
 // Point the page at a fake Apps Script endpoint and record what it receives.
 async function mockSheet(page) {
   const posts = [];
@@ -82,6 +89,8 @@ test('a row leaves the phone only when the Sheet says ok: a failed write is kept
 });
 
 test('a double tap makes one reading and one row, stored before the shuffle', async ({ page }) => {
+  const posts = await mockSheet(page);
+  const rows = () => page.evaluate(() => window.__fff.queue().length).then((q) => q + posts.length); // queued or sent
   await page.goto('/');
   await page.getByRole('button', { name: 'Pull a card' }).click();
   await page.getByLabel('Your name').fill('Ines');
@@ -89,9 +98,11 @@ test('a double tap makes one reading and one row, stored before the shuffle', as
   const btn = page.getByRole('button', { name: 'Read my cards' });
   await btn.evaluate((b) => { b.click(); b.click(); });
   await expect(page.locator('#draw')).toBeVisible();
-  expect(await page.evaluate(() => window.__fff.queue().length)).toBe(1); // queued while the deck is still shuffling
+  // stored (or already sent) while the deck is still shuffling; mid-send a row can be both sent and not yet dequeued
+  expect(await rows()).toBeGreaterThanOrEqual(1);
   await expect(page.locator('#flip')).toHaveClass(/open/, { timeout: 15_000 });
-  expect(await page.evaluate(() => window.__fff.queue().length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.__fff.queue().length)).toBe(0);
+  expect(posts.length).toBe(1); // exactly one row reached the Sheet
 });
 
 test('validation: no name, no rating', async ({ page }) => {
