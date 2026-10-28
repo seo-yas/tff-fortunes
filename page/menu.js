@@ -9,15 +9,9 @@ export const MENU = [
   { id: 'ghosted', name: 'Ghosted at the Motel', numeral: 'VI', arcana: 'The Star', desc: 'Apple-cranberry cider dump cake, cranberry-rosemary syrup, spiced maple pepitas' },
 ];
 
-// Engine card ids that mean "this dish's card" (the engine may name the arcana instead of the dish).
-export const DISH_ALIASES = {
-  brodo: ['brodo', 'dish-brodo', 'the-devil'],
-  beetlejuice: ['beetlejuice', 'dish-beetlejuice', 'the-magician'],
-  ichabod: ['ichabod', 'dish-ichabod', 'the-horseman', 'death'],
-  hex: ['hex', 'dish-hex', 'the-tower'],
-  aloo: ['aloo', 'dish-aloo', 'the-phantom', 'the-moon'],
-  ghosted: ['ghosted', 'dish-ghosted', 'the-star'],
-};
+// Engine card ids that mean "this dish's card". Only dish ids: since the cat card is the fortune (Yas, 2026-10-28), a cat
+// card such as the-star must never be read as the dish card that restages it.
+export const DISH_ALIASES = Object.fromEntries(['brodo', 'beetlejuice', 'ichabod', 'hex', 'aloo', 'ghosted'].map((d) => [d, [d, `dish-${d}`]]));
 
 export const RATINGS = ['Meh', 'Fine', 'Good', 'Real good', 'Marry it']; // same labels as the engine
 

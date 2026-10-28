@@ -46,13 +46,17 @@ test('full flow at 390x844: form, draw, reading, row sent to the Sheet', async (
   await expect(page.locator('#r-title')).not.toBeEmpty();
   expect(await page.locator('#r-lines p').count()).toBeGreaterThan(2);
   await expect(page.locator('#r-omen')).not.toBeEmpty();
-  await expect(page.locator('#card-front img, #card-front .ph')).toHaveCount(1);
+  // Yas, 2026-10-28: the fortune is a cat card even when a dish is ticked; the dish is the second card
+  await expect(page.locator('#card-front .art img')).toHaveAttribute('src', /^cards\/cats\/[a-z-]+\.avif$/);
+  await expect(page.locator('#r-second .mini img')).toHaveAttribute('src', 'cards/dish/hex.webp');
+  await expect(page.locator('#r-second p')).toContainText('turned over what you ate: Hex & the City');
   await expect.poll(() => posts.length).toBe(1);
   const row = posts[0];
   for (const c of COLUMNS) expect(row, c).toHaveProperty(c);
   expect(row.sign).toBe('Scorpio');
   expect(row.birthday).toBe('10-31');
   expect(row.dish_ways).toBe('hex: Beef');
+  expect(row.card_id).not.toMatch(/^dish-/); // the Sheet's card_id is the cat card
   expect(row.rating).toBe('5 Marry it');
   expect(await page.evaluate(() => window.__fff.queue().length)).toBe(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
@@ -154,7 +158,7 @@ test.describe('missing art', () => {
   // a controlling service worker fetches outside page.route, so keep it out of this test
   test.use({ serviceWorkers: 'block' });
 test('missing art never breaks a draw', async ({ page }) => {
-  await page.route('**/cards/dish/*.webp', (r) => r.fulfill({ status: 404, body: '' }));
+  await page.route(/\/cards\/(dish|cats)\/[^/]+\.(webp|avif)$/, (r) => r.fulfill({ status: 404, body: '' }));
   await page.goto('/');
   await fillAndRead(page, { dishes: ['ghosted'] });
   await expect(page.locator('#card-front .ph')).toBeVisible();

@@ -22,6 +22,7 @@ for (let i = 0; i < 30; i++) {
   if (left === 0) break;
   await page.waitForTimeout(1000);
 }
-console.log(JSON.stringify({ seed, queueLeft: left, replies, title: await page.locator('#r-title').textContent() }, null, 2));
+const cardId = await page.evaluate(() => window.__fff.current.fortune.cardId);
+console.log(JSON.stringify({ seed, cardId, queueLeft: left, replies, title: await page.locator('#r-title').textContent() }, null, 2));
 await browser.close();
 process.exit(left === 0 ? 0 : 1);

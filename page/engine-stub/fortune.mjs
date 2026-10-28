@@ -53,8 +53,9 @@ export function drawFortune({ name = '', birthday = '', rating = 3, dishes = [],
   const r = rng(seed);
   const pick = (a) => a[Math.floor(r() * a.length)];
   const known = dishes.filter((d) => DISH_CARD[d]);
-  const card = known.length ? DISH_CARD[pick(known)] : pick(CAT_CARDS);
-  const cat = pick(CAT_CARDS);
+  const dish = known.length ? DISH_CARD[pick(known)] : null; // the cat card is the fortune; the dish is the second card
+  const card = pick(CAT_CARDS);
+  const cat = dish || pick(CAT_CARDS.filter((c) => c.cardId !== card.cardId));
   const sign = signFor(birthday);
   const lines = {
     opening: `${name || 'Friend'}, the deck has been waiting for you.`,
@@ -64,5 +65,5 @@ export function drawFortune({ name = '', birthday = '', rating = 3, dishes = [],
     omen: 'A jar opens on the first try this week.',
     closing: 'See you after dark.',
   };
-  return { cardId: card.cardId, title: card.title, numeral: card.numeral, cat: cat.cardId, lines, text: Object.values(lines).join(' '), seed, stub: true };
+  return { cardId: card.cardId, title: card.title, numeral: card.numeral, cat: { cardId: cat.cardId, title: cat.title, numeral: cat.numeral, name: 'Sgt. Sushi' }, lines, text: Object.values(lines).join(' '), seed, stub: true };
 }

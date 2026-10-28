@@ -225,7 +225,10 @@ function render(v, fortune) {
     mini.className = 'mini';
     mini.append(cardFace(c2.cardId, c2.numeral, c2.title, [], false));
     const p = document.createElement('p');
-    p.textContent = c2.name ? `${c2.name} pulled your second card: ${c2.title}.` : `Your second card: ${c2.title}.`;
+    const ate = dishFor(c2.cardId, []);
+    p.textContent = ate
+      ? `${c2.name || 'The cats'} turned over what you ate: ${ate.name}.`
+      : c2.name ? `${c2.name} pulled your second card: ${c2.title}.` : `Your second card: ${c2.title}.`;
     second.append(mini, p);
   }
 }

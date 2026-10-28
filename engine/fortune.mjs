@@ -193,18 +193,19 @@ export function drawFortune(input = {}, bank = loadedBank) {
   const dishes = parseDishes(input.dishes);
   const rating = parseRating(input.rating);
 
-  // The first card: what they ate, or a cat card when they didn't say.
-  let card;
-  if (dishes.length) {
-    const d = weighted(rand, dishes, (x) => x.rating ?? 3);
-    card = DISH_CARDS.find((c) => c.dish === d.id);
-  } else {
-    card = pick(rand, CAT_CARDS);
-  }
+  // Yas, 2026-10-28 (after the first iPhone pulls): the 24 cat cards are the fortune; what they ate is the second card.
+  // The dish is drawn first (weighted by its rating) so the cat card can avoid the arcana that dish card restages.
+  const dishPick = dishes.length ? weighted(rand, dishes, (x) => x.rating ?? 3) : null;
+  const dishCard = dishPick ? DISH_CARDS.find((c) => c.dish === dishPick.id) : null;
 
-  // The second card, the one that speaks: always a cat card, never the first card.
-  const second = pick(rand, CAT_CARDS.filter((c) => c.id !== card.id && c.id !== card.restages));
-  const speakerKey = second.cat === "both" ? pick(rand, ["peppers", "sushi"]) : second.cat;
+  // The first card: always a cat card (never the one the dish card restages, so the two never show the same arcana).
+  const card = pick(rand, CAT_CARDS.filter((c) => c.id !== dishCard?.restages));
+
+  // The second card: the dish card when they ticked one, else another cat card (never the first, never what it restages).
+  const second = dishCard ?? pick(rand, CAT_CARDS.filter((c) => c.id !== card.id));
+  // The voice stays a cat: the second cat card's cat, or, for a dish second card, the first card's cat.
+  const voice = dishCard ? card.cat : second.cat;
+  const speakerKey = voice === "both" ? pick(rand, ["peppers", "sushi"]) : voice;
   const speaker = CATS[speakerKey];
 
   const signLine = zodiac ? pick(rand, bank.sign[zodiac.sign]) : pick(rand, bank.sign.none);
@@ -217,7 +218,7 @@ export function drawFortune(input = {}, bank = loadedBank) {
 
   const lines = {
     opening: fill(pick(rand, bank.opening[card.id]), name),
-    dish: pick(rand, bank.dish[card.dish ?? "none"]),
+    dish: pick(rand, bank.dish[dishPick?.id ?? "none"]),
     sign: traitLine ? `${signLine} ${traitLine}` : signLine,
     rating: pick(rand, bank.rating[rating ?? "none"]),
     omen: pick(rand, bank.omen),
@@ -226,7 +227,9 @@ export function drawFortune(input = {}, bank = loadedBank) {
 
   const text = [
     lines.opening,
-    `The second card is ${second.title}. ${speaker} says: "${lines.dish}"`,
+    dishCard
+      ? `The second card is what you ate, ${dishCard.dishName}. ${speaker} says: "${lines.dish}"`
+      : `The second card is ${second.title}. ${speaker} says: "${lines.dish}"`,
     lines.sign,
     lines.rating,
     `Pantry omen: ${lines.omen}.`,
@@ -237,13 +240,13 @@ export function drawFortune(input = {}, bank = loadedBank) {
     cardId: card.id,
     title: card.title,
     numeral: card.numeral,
-    dishName: card.dishName ?? null,
+    dishName: dishCard?.dishName ?? null,
     cat: { cardId: second.id, title: second.title, numeral: second.numeral, name: speaker },
     lines,
     text,
     seed,
     zodiac,
-    dish: card.dish ?? null,
+    dish: dishPick?.id ?? null,
     rating: rating ? RATINGS[rating - 1] : null,
   };
 }

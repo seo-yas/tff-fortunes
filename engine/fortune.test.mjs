@@ -106,20 +106,35 @@ test("every slot is non-empty for every kind of input", () => {
         }
 });
 
-test("every dish maps to its arcana and the second card is a different cat card", () => {
+test("a ticked dish is the second card: the fortune is always a cat card", () => {
   const want = { brodo: "The Devil", beetlejuice: "The Magician", ichabod: "The Horseman", hex: "The Tower", aloo: "The Phantom", ghosted: "The Star" };
   for (const d of DISHES) {
+    const firsts = new Set();
     for (let seed = 0; seed < 200; seed++) {
       const f = drawFortune({ dishes: [d], seed }, bank);
-      assert.equal(f.title, want[d]);
+      assert.ok(CAT_CARDS.some((c) => c.id === f.cardId), `first card ${f.cardId} is a cat card`);
+      const dishCard = DISH_CARDS.find((c) => c.dish === d);
+      assert.equal(f.cat.cardId, dishCard.id);
+      assert.equal(f.cat.title, want[d]);
+      assert.notEqual(f.cardId, dishCard.restages);
       assert.equal(f.dish, d);
+      assert.equal(f.dishName, dishCard.dishName);
       assert.ok(bank.opening[f.cardId].map((l) => l.replace("{name}", "friend")).includes(f.lines.opening));
       assert.ok(bank.dish[d].includes(f.lines.dish));
-      const card = DISH_CARDS.find((c) => c.id === f.cardId);
-      assert.notEqual(f.cat.cardId, card.restages);
-      assert.ok(CAT_CARDS.some((c) => c.id === f.cat.cardId));
+      assert.ok(["Sgt. Peppers", "Sgt. Sushi"].includes(f.cat.name));
+      firsts.add(f.cardId);
     }
+    assert.ok(firsts.size >= 15, `${d}: pull again reaches many cat cards (${firsts.size})`);
   }
+});
+
+test("same seed, same cards, with a dish ticked", () => {
+  const input = { name: "Ada", dishes: ["aloo", "brodo"], rating: 5, seed: 987654321 };
+  const a = drawFortune(input, bank);
+  const b = drawFortune({ ...input }, bank);
+  assert.equal(a.cardId, b.cardId);
+  assert.equal(a.cat.cardId, b.cat.cardId);
+  assert.deepEqual(a, b);
 });
 
 test("two or more dishes draw among them, weighted by each dish's rating", () => {
