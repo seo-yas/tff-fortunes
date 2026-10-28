@@ -1,0 +1,171 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Freckled Fork Fortunes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Didact+Gothic&family=GFS+Didot&family=Special+Elite&display=swap">
+<style>
+/* Layout: the event poster as a page. Mustard wavy stripes on white, one fog-gray arch holding the form, collage scraps for headers. */
+:root {
+  --paper: #fbfaf6; --fog: #e9ecef; --navy: #2a2d54; --ink: #1a1a1d; --red: #bb3826; --mustard: #dba51e;
+  --blush: #edc9c3; --salmon: #e4a089; --muted: #5d607e;
+  --block: "Bowlby One", Impact, "Arial Black", sans-serif;
+  --didot: "GFS Didot", Didot, "Bodoni 72", Georgia, serif;
+  --gothic: "Didact Gothic", "Century Gothic", Futura, "Trebuchet MS", sans-serif;
+  --type: "Special Elite", "Courier New", monospace;
+  color-scheme: light;
+}
+html { background: var(--paper); }
+[hidden] { display: none !important; }
+body { margin: 0; color: var(--navy); font: 400 17px/1.55 var(--gothic);
+  background-color: var(--paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='190' viewBox='0 0 72 190'%3E%3Cpath d='M36 -5 C 50 30, 22 65, 36 95 C 50 125, 22 160, 36 195' fill='none' stroke='%23dba51e' stroke-width='11' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 72px 190px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main { max-width: 560px; margin: 0 auto; padding-block: 28px 48px; }
+.arch { background: var(--fog); border-radius: 280px 280px 18px 18px; padding: 64px 22px 30px; display: grid; gap: 28px;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04); }
+.logo { width: 92px; justify-self: center; display: block; }
+.eyebrow { font: 400 13px/1.4 var(--gothic); letter-spacing: .3em; text-transform: uppercase; color: var(--navy); margin: 0; text-align: center; }
+.ransom { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; margin: 8px 0 10px; }
+.ransom { flex-wrap: nowrap; gap: 3px; }
+.ransom span { display: inline-block; padding: 2px 6px 0; font-size: clamp(26px, 8vw, 40px); line-height: 1.15; box-shadow: 0 2px 4px rgba(0,0,0,.18); }
+.r1 { background: var(--ink); color: #fff; font-family: var(--block); transform: rotate(-4deg); }
+.r2 { background: #fff; color: var(--ink); font-family: var(--didot); font-weight: 700; transform: rotate(3deg); font-size: clamp(30px, 9vw, 46px) !important; }
+.r3 { background: var(--red); color: #fff; font-family: var(--block); transform: rotate(-2deg); }
+.r4 { background: var(--paper); color: var(--navy); font-family: var(--type); transform: rotate(5deg); }
+.lede { margin: 0 auto; text-align: center; max-width: 30em; color: var(--navy); }
+h2 { font: 400 24px/1.1 var(--block); color: var(--red); margin: 0 0 4px; text-transform: uppercase; letter-spacing: .01em; }
+.hint { color: var(--muted); font-size: 15px; margin: 0 0 10px; }
+section { display: grid; gap: 12px; }
+label.f { display: grid; gap: 6px; font: 400 13px/1.3 var(--gothic); letter-spacing: .16em; text-transform: uppercase; color: var(--navy); }
+input[type=text], input[type=email], textarea {
+  font: 400 17px/1.4 var(--gothic); letter-spacing: 0; text-transform: none; color: var(--ink); background: #fff;
+  border: 2px solid var(--navy); border-radius: 0; padding: 12px 14px; width: 100%; box-sizing: border-box; }
+textarea { min-height: 76px; resize: vertical; font-family: var(--type); }
+input:focus-visible, textarea:focus-visible, button:focus-visible, .chip input:focus-visible + span, .dots input:focus-visible + span {
+  outline: 3px solid var(--mustard); outline-offset: 2px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--navy); }
+.check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--red); }
+
+.menu { display: grid; gap: 12px; }
+.item { background: #fff; color: var(--ink); border: 2px solid var(--navy); }
+.item.on { box-shadow: 6px 6px 0 var(--red); }
+.item > button { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 4px 12px;
+  align-items: center; padding: 14px 16px; cursor: pointer; }
+.item .nm { font: 400 20px/1.1 var(--block); color: var(--red); text-transform: uppercase; }
+.item .ds { grid-column: 1; font: 400 15px/1.35 var(--type); color: var(--ink); }
+.item .tick { grid-row: 1 / span 2; grid-column: 2; width: 32px; height: 32px; border: 2px solid var(--navy);
+  display: grid; place-items: center; font: 400 18px var(--block); color: var(--navy); }
+.item.on .tick { background: var(--navy); color: #fff; }
+.item .more { display: grid; gap: 12px; padding: 14px 16px 16px; border-top: 2px dashed var(--navy); background: var(--paper); }
+.row-label { font: 400 12px/1 var(--gothic); letter-spacing: .2em; text-transform: uppercase; color: var(--navy); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dots { display: flex; gap: 4px; }
+.chip input, .dots input { position: absolute; opacity: 0; pointer-events: none; }
+.chip span { display: inline-block; padding: 8px 14px; border: 2px solid var(--navy); font: 400 15px var(--gothic); cursor: pointer; background: #fff; }
+.chip input:checked + span { background: var(--navy); color: #fff; }
+.dots label { display: grid; justify-items: center; gap: 4px; font: 400 11px/1.15 var(--gothic); color: var(--navy); flex: 1 1 0; min-width: 0; cursor: pointer; text-align: center; }
+.dots span { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--red); display: block; background: #fff; }
+.dots input:checked + span { background: var(--red); box-shadow: inset 0 0 0 4px #fff; }
+.item textarea { min-height: 56px; }
+.item label.f { color: var(--navy); }
+
+.err { color: var(--red); font: 400 15px/1.4 var(--type); margin: 0; background: #fff; padding: 8px 12px; border-left: 4px solid var(--red); }
+.go { font: 400 21px/1 var(--block); text-transform: uppercase; letter-spacing: .02em; color: #fff; background: var(--red); border: 0;
+  padding: 20px 28px; cursor: pointer; justify-self: stretch; box-shadow: 5px 5px 0 var(--ink); }
+.go:active { transform: translate(2px, 2px); box-shadow: 3px 3px 0 var(--ink); }
+.go:disabled { opacity: .7; cursor: progress; }
+.fine { color: var(--muted); font-size: 14px; text-align: center; margin: 0; }
+
+/* result */
+.stage { perspective: 1400px; justify-self: center; width: min(100%, 400px); }
+.flip { position: relative; aspect-ratio: 1080 / 1920; transform-style: preserve-3d; transition: transform 1.1s cubic-bezier(.2,.7,.2,1); }
+.flip.done { transform: rotateY(180deg); }
+.face { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; }
+.back { background: var(--navy); display: grid; place-items: center; }
+.back .cardback { width: 76%; aspect-ratio: 820/1420; border-radius: 12px; border: 4px solid var(--ink); box-sizing: border-box; background-color: var(--paper);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='95' viewBox='0 0 72 190'%3E%3Cpath d='M36 -5 C 50 30, 22 65, 36 95 C 50 125, 22 160, 36 195' fill='none' stroke='%23dba51e' stroke-width='11' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 36px 95px; display: grid; place-items: center; }
+.back .cardback img { width: 46%; background: var(--fog); border-radius: 999px 999px 8px 8px; padding: 22px 14px 14px; }
+.front { transform: rotateY(180deg); }
+.front img { width: 100%; height: 100%; display: block; }
+.reading { background: #fff; color: var(--ink); border: 2px solid var(--navy); padding: 22px 22px 24px; display: grid; gap: 10px; box-shadow: 6px 6px 0 var(--navy); }
+.reading h2 { font-size: 24px; }
+.reading .k { font: 400 22px/1.3 var(--didot); color: var(--navy); margin: 0; }
+.reading p { margin: 0; font-size: 17px; }
+.actions { display: grid; gap: 12px; }
+@media (prefers-reduced-motion: reduce) { .flip { transition: none; } }
+</style></head><body>
+
+<main>
+  <!-- Netlify reads this hidden copy at deploy so it knows every field name. -->
+  <form name="freckled-feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input name="form-name"><input name="bot-field"><input name="name"><input name="email"><input name="news">
+    <input name="ordered"><input name="overall"><input name="card">
+    <input name="brodo_rating"><input name="brodo_note">
+    <input name="beetlejuice_rating"><input name="beetlejuice_note">
+    <input name="ichabod_rating"><input name="ichabod_way"><input name="ichabod_note">
+    <input name="hex_rating"><input name="hex_way"><input name="hex_note">
+    <input name="aloo_rating"><input name="aloo_way"><input name="aloo_note">
+    <input name="ghosted_rating"><input name="ghosted_note">
+  </form>
+
+  <div id="ask" class="arch">
+    <header style="display:grid;gap:6px">
+      <img class="logo" src="art2/logo-ff-black.png" alt="The Freckled Fork">
+      <p class="eyebrow">Halloween at the Starlite</p>
+      <div class="ransom" aria-label="Fortune"><span class="r1">F</span><span class="r2">O</span><span class="r4">R</span><span class="r3">T</span><span class="r2">U</span><span class="r1">N</span><span class="r4">E</span></div>
+      <p class="lede">Tell us what you ate and how it landed... then Sgt. Peppers and Sgt. Sushi will pull you a card.</p>
+    </header>
+
+    <form id="fb" novalidate>
+      <div style="display:grid;gap:28px">
+        <section>
+          <h2>Who's eating</h2>
+          <label class="f" for="name">Your name<input type="text" id="name" name="name" autocomplete="given-name" required></label>
+          <label class="f" for="email">Email<input type="email" id="email" name="email" autocomplete="email" inputmode="email" required></label>
+          <label class="check" for="news"><input type="checkbox" id="news" name="news" checked> Send me the next pop-up and dinner news. Not often, promise.</label>
+          <p style="display:none"><label>Leave this empty <input name="bot-field" id="bot"></label></p>
+        </section>
+
+        <section>
+          <div><h2>What'd you have?</h2><p class="hint">Tap everything you ordered, then tell us the truth.</p></div>
+          <div class="menu" id="menu"></div>
+        </section>
+
+        <section>
+          <label class="f" for="overall">Anything else on your mind? Sass welcome.<textarea id="overall" name="overall"></textarea></label>
+        </section>
+
+        <p class="err" id="err" role="alert" hidden></p>
+        <button class="go" id="go" type="submit">Pull my card</button>
+        <p class="fine">Your answers go straight to Chef Jess. Your email stays with us.</p>
+      </div>
+    </form>
+  </div>
+
+  <div id="result" class="arch" hidden>
+    <header style="display:grid;gap:6px">
+      <img class="logo" src="art2/logo-ff-black.png" alt="The Freckled Fork">
+      <p class="eyebrow">The Sergeants have spoken</p>
+      <h2 id="rh" style="text-align:center;font-size:30px;margin-top:6px">Your card</h2>
+    </header>
+    <div class="stage"><div class="flip" id="flip">
+      <div class="face back"><div class="cardback"><img src="art2/logo-ff-black.png" alt=""></div></div>
+      <div class="face front"><img id="cardimg" alt=""></div>
+    </div></div>
+    <div class="reading">
+      <h2 id="ct"></h2>
+      <p class="k" id="ck"></p>
+      <p id="cx"></p>
+    </div>
+    <div class="actions">
+      <button class="go" id="save" type="button">Save my card</button>
+      <p class="fine" id="savehint">Or press and hold the card to save it. Post it and tag @thefreckledfork... the Sergeants love attention.</p>
+    </div>
+  </div>
+  <canvas id="cv" hidden></canvas>
+</main>
+
+<script src="cards.js"></script>
+<script src="card.js"></script>
+<script src="app.js"></script>
+</body></html>
