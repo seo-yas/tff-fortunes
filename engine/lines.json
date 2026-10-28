@@ -1,0 +1,643 @@
+{
+  "opening": {
+    "the-fool": [
+      "{name}, you drew The Fool. Sushi stepped off the ledge, and look: buns everywhere.",
+      "The Fool came for a hot dog and stayed for the people.",
+      "Zero on the card, {name}, and zero regrets about coming out tonight.",
+      "The Fool says leap, honey. The landing is softer than it looks from up there.",
+      "A bindle of buns and a big idea: that's The Fool, and that's you.",
+      "New beginnings wear ridiculous costumes. The Fool isn't embarrassed, and neither are you.",
+      "The Fool packed light: one bun, one dream, one very small cowboy cat."
+    ],
+    "the-magician": [
+      "The Magician, {name}. Everything you need is already on the table.",
+      "Peppers lays out the spoon, the cup, the knife, the coin. Your move.",
+      "You drew The Magician: proof you can make dinner out of almost nothing.",
+      "The Magician doesn't wait for the perfect recipe, and this month neither do you.",
+      "A little nerve, a little garlic. Honestly, that's the Magician's whole trick.",
+      "The Magician says the magic was showing up. You did. Abracadabra, babe.",
+      "Hands on the table, {name}. The Magician wants to see what you cook up next."
+    ],
+    "the-high-priestess": [
+      "The High Priestess, {name}. You know more than you're letting on.",
+      "Sushi sits between two pillars of pie crust and keeps your secrets.",
+      "The High Priestess says trust the quiet voice that brought you here tonight.",
+      "Some things you just know, like when the soup is done. That's The High Priestess.",
+      "The High Priestess keeps a few evenings sacred. Steal one back for yourself.",
+      "She sees right through the fog, {name}, and she likes what she sees.",
+      "A card for the gut you fed tonight. The High Priestess approves."
+    ],
+    "the-empress": [
+      "The Empress, {name}. Take the second helping and the whole couch.",
+      "Peppers on a throne of okra and squash. Abundance looks good on you both.",
+      "The Empress says be soft this season. You're allowed to receive.",
+      "Harvest card, honey. Let people pour into you for once.",
+      "The Empress never apologizes for taking up space, and Peppers takes up plenty.",
+      "The Empress sets a long table and never counts the chairs.",
+      "A card for gardeners, feeders and anyone who brought extra napkins."
+    ],
+    "the-emperor": [
+      "The Emperor, {name}. Peppers holds the armchair and nobody argues.",
+      "Build the table you want to sit at, and make the rules generous.",
+      "The Emperor says structure is just love with good posture.",
+      "You drew The Emperor: the one who remembers everyone's order.",
+      "Hold your ground and your hot dog, {name}. The Emperor has spoken.",
+      "The Emperor's crown is a paper one from the pet parade. Still counts.",
+      "The Emperor keeps the porch light on and the snacks within reach."
+    ],
+    "the-hierophant": [
+      "The Hierophant, {name}. Some traditions deserve to stick, like Friday hot dogs.",
+      "Peppers teaches the old ways: nap first, eat second, judge everything.",
+      "The Hierophant says find your people and learn their rituals.",
+      "A card for the keepers of family recipes, even the ones written on napkins.",
+      "You drew The Hierophant. Start a tradition this year, and make it delicious.",
+      "The Hierophant blesses the grill and everyone standing near it."
+    ],
+    "the-lovers": [
+      "The Lovers, {name}. Two cats, one blanket, zero shame.",
+      "Forehead to forehead under the moths. The Lovers are about choosing, honey.",
+      "The Lovers say let somebody see you mid-yawn this winter.",
+      "A card about what you love, and tonight that includes mustard.",
+      "The Lovers: the pairing that works. Like cider and onions. Like you and this lot.",
+      "Peppers and Sushi drew this one together. They are not sharing the blanket.",
+      "Choose what feeds you, {name}. That's The Lovers in a nutshell."
+    ],
+    "the-chariot": [
+      "The Chariot, {name}. Two cats pulling one hot-dog cart, mostly in the same direction.",
+      "You don't have to drag this year to the finish line alone.",
+      "The Chariot says momentum looks a lot like company.",
+      "Hold the reins loosely. One of the horses is a cat, and he is napping.",
+      "Full speed down Route 209, {name}. The Chariot has places to be.",
+      "The Chariot rolls on mustard and good intentions. Hop on."
+    ],
+    "strength": [
+      "Strength, {name}. Soft belly, strong heart.",
+      "Peppers shows his belly to a lot of strangers. That's courage.",
+      "Strength says gentleness is the flex, baby.",
+      "You made it through a whole year. Sprawl out; you've earned the rug.",
+      "Strength isn't the loudest one at the party. It's the one holding the plates.",
+      "A card for the ones who stayed sweet when it would've been easier not to."
+    ],
+    "the-hermit": [
+      "The Hermit, {name}. Sushi in a cardboard box with a lantern, perfectly content.",
+      "Leave the party early and call it self-respect. The Hermit does.",
+      "The Hermit says go quiet for a while, then come back and tell us everything.",
+      "One candle, one blanket, one cat. The Hermit's idea of a big night.",
+      "You drew The Hermit. We'll save you a seat for when you come out.",
+      "The Hermit found the warmest box in the Catskills and isn't telling."
+    ],
+    "wheel-of-fortune": [
+      "Wheel of Fortune, {name}. Spin the lazy susan and see which condiment lands.",
+      "Up, down, belly up, belly down. The wheel turned, and here you are, fed.",
+      "Luck is just showing up enough times that the wheel lands on you.",
+      "The Wheel says what goes around comes back to the table.",
+      "Ketchup, mustard, relish, onion jam. The Wheel of Fortune doesn't play favorites.",
+      "The year spun you around, {name}, and you still landed at a picnic table."
+    ],
+    "justice": [
+      "Justice, {name}. You deserve exactly what you ordered.",
+      "Sushi holds the scales: one hot dog, one hot dog. Perfectly balanced.",
+      "Justice says weigh what you give against what you let yourself take.",
+      "That look you just gave your plate? Fair. Justice agrees.",
+      "A card for fair shares and second bites. Split the dump cake evenly.",
+      "Justice reminds you that forgiving yourself counts too."
+    ],
+    "the-hanged-one": [
+      "The Hanged One, {name}. Peppers dangles from a vine and finds it charming.",
+      "Stop pushing for a minute. Let the leaves fall around you.",
+      "The Hanged One says the world looks better upside down. Try it.",
+      "Surrender is a strategy, honey. Ask any cat on a warm windowsill.",
+      "A pause card. The kettle's on, and nobody's rushing you.",
+      "Hang loose, {name}. The answer shows up when you stop squinting."
+    ],
+    "death": [
+      "Death, {name}, but the gentle kind: a harvest clearing and falling leaves.",
+      "Something wraps up so something else can start. Very October of you.",
+      "Death here just means the old season is clocking out.",
+      "Sushi sweeps the leaves into a pile and jumps in. That's the card.",
+      "Let the year end the way leaves do: bright, then gone, then garden.",
+      "Endings feed the next thing, {name}. Ask any garden."
+    ],
+    "temperance": [
+      "Temperance, {name}. Sushi pours between two cups and spills nothing. Mostly.",
+      "A little sweet, a little sharp. The magic is in the blend.",
+      "Temperance says mix the old friends with the new ones from tonight.",
+      "Pour a bit of yourself into others and let them top you back up.",
+      "Half cider, half something else. Temperance knows the ratio.",
+      "The middle path, honey: not too hot, not too cold, just like the brodo."
+    ],
+    "the-devil": [
+      "The Devil, {name}. Peppers yawns and the fangs come out. Adorable.",
+      "The Devil says indulge a little. It is a Halloween pop-up, after all.",
+      "A card about the things that tempt you. Tonight it's the mustard.",
+      "You drew The Devil. Loosen the chains; keep the snacks.",
+      "The Devil wants you to notice what has a hold on you. Then laugh.",
+      "Wicked grin, soft paws. The Devil is mostly bluffing, {name}."
+    ],
+    "the-tower": [
+      "The Tower, {name}. The bun tower fell, and somebody got a free bun.",
+      "Sushi knocked it over on purpose. Sometimes things need to come down.",
+      "The Tower says don't panic when plans topple. Rebuild with better buns.",
+      "Shake-ups clear the shelf for what's next. Very end-of-year energy.",
+      "A dramatic card for a dramatic night. You're handling it beautifully.",
+      "When the tower wobbles, {name}, step aside and grab a snack."
+    ],
+    "the-star": [
+      "The Star, {name}. The Starlite sign, buzzing under real stars.",
+      "Hope with neon on it. You're allowed to want things out loud.",
+      "The Star says after a long, weird year, be hopeful without apologizing.",
+      "Peppers made a wish on the motel sign. He won't say what it was.",
+      "A card for wishes, {name}. Make yours big and a little silly.",
+      "The Star keeps the vacancy light on for you."
+    ],
+    "the-moon": [
+      "The Moon, {name}. Two cats on a Catskills ridge, trying very hard to howl.",
+      "Not everything has to make sense yet. Let the fog roll in.",
+      "Halloween is the one night it's fine not to know what you are.",
+      "The Moon says trust your night eyes and keep walking toward home.",
+      "Moonlight makes everything a little strange and a little beautiful, including you.",
+      "A card for dreamers and late-night snackers, {name}."
+    ],
+    "the-sun": [
+      "The Sun, {name}. Peppers belly-up in a sunbeam, completely unbothered.",
+      "Joy is just lying there on the rug, waiting for you to roll into it.",
+      "The Sun says let the short days be bright anyway.",
+      "Unbothered and glowing, honey. That's the whole card.",
+      "Find the warm spot and claim it. The Sun insists.",
+      "The brightest card in the deck, drawn on a dark October night. Nice, {name}."
+    ],
+    "judgement": [
+      "Judgement, {name}. Both cats look up from the bed like they heard their names.",
+      "Somebody's calling you toward a fresh start. Pick up.",
+      "Judgement says forgive last year's you. They cooked with what was in the fridge.",
+      "The end of the year is a good time to say what you actually want.",
+      "Rise from the rug, honey. The trumpet is just the dinner bell.",
+      "A wake-up card, {name}. Stretch first, then answer the call."
+    ],
+    "the-world": [
+      "The World, {name}. Two cats curled into one perfect circle.",
+      "Full circle and a full belly. Look at you, finishing a whole year.",
+      "The World says you made it all the way around.",
+      "A motel lot full of strangers who feel like your people. That's The World.",
+      "Everything in its place, including you, here, tonight.",
+      "A completion card, {name}. Take a bow, then take another bite."
+    ],
+    "the-pet-parade": [
+      "The Pet Parade, {name}. Costumes, leashes, and two cats leading like they planned it.",
+      "You drew our house card. Fall in behind the dachshund in the pumpkin suit.",
+      "The Pet Parade says everybody belongs in the procession, even the shy ones.",
+      "Strut it, {name}. The Pet Parade only goes one speed: fabulous.",
+      "Belonging looks like a parade where nobody's costume quite fits.",
+      "The cats lead, the dogs follow, and one iguana is having the best night."
+    ],
+    "the-pass": [
+      "The Pass, {name}. Both cats at the kitchen window, inspecting every plate.",
+      "Our other house card: the moment the food leaves the kitchen and meets you.",
+      "The Pass says what you make is meant to be shared.",
+      "Six plates under the heat lamp, two cats on quality control.",
+      "Order up, {name}. The Pass sends you out into the night well fed.",
+      "Nothing leaves the pass without love on it. Not even you."
+    ],
+    "dish-brodo": [
+      "The Devil Wears Brodo, {name}. You sipped with the devil and he was delightful.",
+      "The Devil came in a cup tonight: onion, cider, a little smoke.",
+      "You drew The Devil, and he's warm, brothy and wearing crispy shallots.",
+      "Sipping broth in a motel lot in October. The Devil approves of your choices.",
+      "The Devil says the best temptations are the ones you hold with two hands.",
+      "A devilish card for someone who went straight for the soup. Respect.",
+      "The Devil Wears Brodo, and honestly it looks better on you, {name}.",
+      "Charred cider, roasted garlic, a wicked little grin. That's your card.",
+      "The Devil wants you warm from the inside out. Mission accomplished."
+    ],
+    "dish-beetlejuice": [
+      "Beet*lejuice, {name}. Say it three times and The Magician appears.",
+      "The Magician turned a beet into a party. You were there.",
+      "Blood-red and a little bit spooky. The Magician likes your nerve.",
+      "You drew The Magician, the card of turning roots into something wonderful.",
+      "Bat chips for wands, tahini swirled like a spell. That's your card, {name}.",
+      "The Magician says you already have everything you need, including walnuts.",
+      "A beet in a top hat. The Magician does love a costume.",
+      "The Magician dipped a bat chip and the whole night changed color.",
+      "Beet*lejuice, Beet*lejuice... careful, {name}, one more and you'll want seconds."
+    ],
+    "dish-ichabod": [
+      "Ichabod's Crunch, {name}. The Horseman rode in with cider doughnut crumbles.",
+      "The Horseman is Death restaged, honey: just one season ending, deliciously.",
+      "You drew The Horseman. Something ends, something crunchy begins.",
+      "Headless rider, full heart. The Horseman never forgets the apple-butter mustard.",
+      "The Horseman galloped down Route 209 for you, {name}. Hold on tight.",
+      "A hollow full of apples and a horseman who knows the way home.",
+      "Ichabod ran from the Horseman. You ran toward the hot dog. Smart.",
+      "The Horseman says let the old year ride off, and keep the crumbs.",
+      "Pickled onion, cider doughnut, a hoofbeat in the dark. Your card, {name}."
+    ],
+    "dish-hex": [
+      "Hex & the City, {name}. The Tower, built of onion jam, still standing.",
+      "A street-cart hot dog in the Catskills. The Tower loves a plot twist.",
+      "You drew The Tower: the city came to the mountains and shook things up.",
+      "The Tower says a little upheaval makes room for better mustard.",
+      "Spicy brown mustard, sauerkraut, a hex on boring dinners. That's your card.",
+      "The Tower fell and landed in a bun. Lucky for you, {name}.",
+      "City energy, upstate address. The Tower knows you contain multitudes.",
+      "Hex & the City: one hot dog, lots of drama, no plan survives.",
+      "When the tower shakes, {name}, grab the dog and keep walking."
+    ],
+    "dish-aloo": [
+      "Aloo Boo, {name}. The Phantom slipped in under the moon with a tamarind glaze.",
+      "The Phantom is The Moon in a sheet costume. Boo, but make it potatoes.",
+      "You drew The Phantom: things aren't always what they seem, especially potatoes.",
+      "Spiced, smashed, glazed and haunted. The Phantom has range, {name}.",
+      "The Phantom says the things you can't see yet are already cooking.",
+      "Boo! Just a potato. The Phantom loves to make an entrance.",
+      "Moonlit and mysterious, with a crunch of sev. Your card, {name}.",
+      "The Phantom floats through the lot, leaving mint-cilantro aioli in its wake.",
+      "A ghost card that tastes like tamarind. Trust the mystery."
+    ],
+    "dish-ghosted": [
+      "Ghosted at the Motel, {name}. The Star shines over the Starlite and your dessert.",
+      "You drew The Star, and the dump cake says hope tastes like cranberries.",
+      "The Star says save room for the sweet part. You did.",
+      "Ghosted at the Motel, but the cozy kind. The vacancy sign is still on.",
+      "A wish card that ends in maple pepitas. The Star is very good at dessert.",
+      "Under the Starlite sign, {name}, every ghost gets a second helping.",
+      "The Star came for dessert and stayed for the company.",
+      "Cranberry, rosemary, a glow over the motel lot. Your card is The Star.",
+      "Somebody left the light on for you, {name}. It's The Star."
+    ]
+  },
+  "dish": {
+    "brodo": [
+      "I watched you sip that brodo. You didn't offer me any. Noted.",
+      "You held that cup like it was a kitten. I respect that.",
+      "French onion, no bowl, no spoon. You figured it out faster than most.",
+      "The shallots crunched. My ears turned. We both know what happened.",
+      "You blew on it twice before sipping. Very elegant. I'd have knocked it over.",
+      "That broth smelled like a fireplace. I sat closer than I'd admit.",
+      "You closed your eyes on the first sip. I saw. I tell no one.",
+      "Cider and onion in one cup? You're braver than the dog next door.",
+      "You saved the last sip for last. Classic. I do the same with tuna.",
+      "Steam on your face, cup in both hands. You looked like a cozy little lantern."
+    ],
+    "beetlejuice": [
+      "Red dip, bat chips. You ate the bats first. Bold.",
+      "You got muhammara on your sleeve. I've licked worse off my paw today.",
+      "I watched you scoop. Big scoop. No hesitation. I'm proud of you.",
+      "Beets look like trouble. You went in anyway. Good instincts.",
+      "You said the name three times. Nothing appeared but more chips. Fine by me.",
+      "Walnuts, tahini, a swirl. You traced the swirl with a chip like an artist.",
+      "Every chip had a bat on it. You ate a whole colony. Impressive.",
+      "You offered a chip to a stranger. That's how friendships start out here.",
+      "Red on your fingertips, grin on your face. Very witchy. I approve.",
+      "You went back for one last bat chip. I counted. It was four last ones."
+    ],
+    "ichabod": [
+      "Doughnut crumbs on a hot dog? You didn't even blink. Respect.",
+      "You ate the crunchy end first. Strategic. I do that with kibble.",
+      "I watched the mustard drip. You caught it. Reflexes like a cat.",
+      "Pickled onions went everywhere. I would've helped, but I'm a professional.",
+      "You took a picture first. The hot dog was very patient. So was I.",
+      "Apple butter on your chin, for the record. Still looked good.",
+      "You held it with two hands like a precious thing. Correct.",
+      "Chicken or vegan, you picked like you meant it. That's character.",
+      "Every crumb fell like an autumn leaf. I chased three of them.",
+      "You inspected that hot dog like a telescope. Very scientific of you."
+    ],
+    "hex": [
+      "Sauerkraut, onion jam, spicy mustard. You took it like a New Yorker.",
+      "You said 'just like the city' with your mouth full. I believed you.",
+      "That mustard had a kick. You kicked back. Good.",
+      "You leaned over so the jam wouldn't drip. Elegant. Almost feline.",
+      "Beef or vegan, you ate it like a street-cart regular.",
+      "The nigella seeds looked like tiny bats. You ate them anyway. Fearless.",
+      "You walked and ate at the same time. A city skill. I'm impressed.",
+      "Sauerkraut on your shirt. Wear it with pride. It's basically a costume.",
+      "You nodded at that hot dog like you'd met before. Old friends.",
+      "First bite, eyebrows up. Second bite, eyes closed. I know that face."
+    ],
+    "aloo": [
+      "Smashed potatoes on a hot dog. You didn't ask questions. That's trust.",
+      "The sev crunched like leaves. I pounced on nothing. You laughed. Fair.",
+      "Tamarind, dates, mint. You tasted all three and grinned. I saw.",
+      "You licked the glaze off your thumb. No shame. I do it all day.",
+      "You said 'boo' to the potato. The potato did not respond. I did.",
+      "Fried shallots everywhere. I've decided they're mine now.",
+      "You ate it like the lot was empty and the moon was yours.",
+      "The spice made you blink twice. Then you went right back in. Tough.",
+      "You asked what sev was, then ate it all before the answer. Efficient.",
+      "Mint-cilantro aioli on the corner of your mouth. I won't tell. Probably."
+    ],
+    "ghosted": [
+      "Dump cake, and you dumped it straight into your heart. Poetic.",
+      "You scraped the cup clean. I would've too, if they let me.",
+      "The pepitas went first. You save the best for first. Interesting.",
+      "Cranberry syrup on your spoon, stars overhead. Very romantic, for a dessert.",
+      "You closed your eyes and hummed. I heard it from across the lot.",
+      "You shared a bite with your friend. Kind. Unusual. I'm keeping notes.",
+      "Warm cake, cold night. You did the math correctly.",
+      "Rosemary in a dessert? You were skeptical for one bite. Then you weren't.",
+      "You said you were done, then took three more bites. Same, honestly.",
+      "Maple and apple and you, under the motel sign. Picture perfect."
+    ],
+    "none": [
+      "You didn't tell me what you ate. I'll find out. I always find out.",
+      "No dish on the list? I smell hot dog on you anyway. Nice try.",
+      "Mystery eater. I respect a cat-like level of privacy.",
+      "You kept your order secret. Next time, bring me a bite as payment.",
+      "Nothing on the list, but you came out tonight. That's the main course.",
+      "You skipped the menu question. I skip questions too. We understand each other.",
+      "No plate to judge, so I'll judge your shoes. They're great.",
+      "Haven't eaten yet? The grill is right there. I'll wait. I'm great at waiting.",
+      "An empty plate is just a full one that hasn't happened yet.",
+      "You came for the cards, not the food. Bold. Unusual. Welcome."
+    ]
+  },
+  "sign": {
+    "aries": [
+      "Aries, you were first in line for the grill. Of course you were.",
+      "Aries, charge into November like it owes you a hot dog.",
+      "Aries energy: no map, all mustard. Keep going.",
+      "Aries, let somebody else lead the parade for one block. Then take it back.",
+      "Ram horns suit you, Aries. Wear them to the next party."
+    ],
+    "taurus": [
+      "Taurus, you know good food when you taste it. Tonight you tasted it.",
+      "Taurus, claim the comfiest chair this winter and don't apologize.",
+      "Taurus, slow down and savor. Nobody savors like you.",
+      "Taurus, your loyalty is a warm blanket. Throw it over the people you love.",
+      "Taurus, the cats recognize a fellow connoisseur of naps."
+    ],
+    "gemini": [
+      "Gemini, you ordered two things and talked to six people. Classic.",
+      "Gemini, both of you are invited. Bring snacks.",
+      "Gemini, your curiosity is your best costume. Keep wearing it.",
+      "Gemini, tell the story twice. It gets better each time.",
+      "Gemini, one cat says yes, one says maybe. You get to choose."
+    ],
+    "cancer": [
+      "Cancer, you made friends with the grill crew. Home is wherever you land.",
+      "Cancer, your shell is cozy, but the porch light is on. Come out.",
+      "Cancer, you feed people. Let someone feed you this season.",
+      "Cancer, the moon is your sign's best friend, and it's out tonight.",
+      "Cancer, hold on to the soft things. They hold on to you too."
+    ],
+    "leo": [
+      "Leo, you walked in like the parade was for you. Honestly, fair.",
+      "Leo, the cats acknowledge you as royalty. Reluctantly.",
+      "Leo, shine on, but share the spotlight with the dachshund.",
+      "Leo, your costume is a ten. The confidence is an eleven.",
+      "Leo, take the warm spot by the fire. It was saved for you."
+    ],
+    "virgo": [
+      "Virgo, you noticed the garnish. Nobody else noticed the garnish.",
+      "Virgo, let one thing be messy this month. Start with the dump cake.",
+      "Virgo, your lists are beautiful. Add 'rest' to the top.",
+      "Virgo, you fixed someone's napkin without asking. Kind, and very Virgo.",
+      "Virgo, the cats approve of your tidy whiskers."
+    ],
+    "libra": [
+      "Libra, you couldn't pick one dish, so you studied all six. Balance.",
+      "Libra, your birthday season just ended. Keep the party going anyway.",
+      "Libra, make the hard choice this month. Then make a pretty one.",
+      "Libra, you bring harmony to every picnic table. We noticed.",
+      "Libra, the scales tip toward joy tonight. Let them."
+    ],
+    "scorpio": [
+      "Scorpio, happy birthday season. The cats bow, slightly.",
+      "Scorpio, Halloween is basically your holiday. Act like it.",
+      "Scorpio, you see through every costume here. Keep the secrets.",
+      "Scorpio: mysterious, intense, and holding a hot dog. Iconic.",
+      "Scorpio, let someone in on one of your secrets this winter."
+    ],
+    "sagittarius": [
+      "Sagittarius, you came a long way for a hot dog. Worth it.",
+      "Sagittarius, your birthday is around the corner. Start planning the snacks.",
+      "Sagittarius, keep wandering. The Catskills have more roads than you think.",
+      "Sagittarius, your laugh carried across the lot. Good.",
+      "Sagittarius, aim your arrow at something fun for next year."
+    ],
+    "capricorn": [
+      "Capricorn, you climbed a mountain to get here. Literally. It's the Catskills.",
+      "Capricorn, you work hard. Tonight, you get to just eat.",
+      "Capricorn, the goat in you loves a mountain motel. Of course.",
+      "Capricorn, plan next year if you must, but finish your dessert first.",
+      "Capricorn: steady hooves, soft heart. The cats see both."
+    ],
+    "aquarius": [
+      "Aquarius, you came to a pet parade at a motel. Original, as always.",
+      "Aquarius, your weird ideas are the good kind. Share one tonight.",
+      "Aquarius, pour yourself into something new this winter.",
+      "Aquarius, you talk to strangers like old friends. Keep doing it.",
+      "Aquarius, the cats find you fascinating and slightly suspicious."
+    ],
+    "pisces": [
+      "Pisces, the pet parade made you misty. Same here.",
+      "Pisces, your dreams are big and delicious. Write one down tonight.",
+      "Pisces, swim toward whatever feels like warm broth.",
+      "Pisces, you feel everything. Tonight, feel full and cozy.",
+      "Pisces, the cats are suspicious of fish puns but love you anyway."
+    ],
+    "none": [
+      "No birthday given, so the stars are guessing. They guess fabulous.",
+      "The stars don't need your birthday. They already like you.",
+      "Born on a day, under a sky. That's all the cats need to know.",
+      "Keep your birthday a secret. The stars love a mystery guest.",
+      "The stars skipped the paperwork tonight and went straight to the good part.",
+      "Unknown sign, known vibe: hungry and here. Perfect."
+    ]
+  },
+  "element": {
+    "fire": [
+      "Fire sign: you warm up any room, even a parking lot.",
+      "Fire sign: the grill feels like home, and it shows.",
+      "Fire sign: keep the spark lit through the cold months.",
+      "Fire sign: big flame, warm hands. Keep some heat for yourself.",
+      "Fire sign: you bring the heat and the hot sauce."
+    ],
+    "earth": [
+      "Earth sign: rooted, steady, and always knows where the good bread is.",
+      "Earth sign: the harvest is your season. Gather what you love.",
+      "Earth sign: feet on the ground, plate in your hand. Correct.",
+      "Earth sign: steady as the Catskills, and twice as cozy.",
+      "Earth sign: plant something this winter, even if it's just an idea."
+    ],
+    "air": [
+      "Air sign: your ideas float around the room. Catch a good one.",
+      "Air sign: light as a moth, and just as drawn to candles.",
+      "Air sign: talk, laugh, wander. The breeze is on your side.",
+      "Air sign: keep a window open for new people this winter.",
+      "Air sign: you make conversation the way a good host makes soup."
+    ],
+    "water": [
+      "Water sign: deep feelings, warm broth. Both suit you.",
+      "Water sign: let the tide carry you somewhere cozy.",
+      "Water sign: you read the room before you read the menu.",
+      "Water sign: like a mountain creek, you always find your way.",
+      "Water sign: soak in tonight. You don't have to rush."
+    ]
+  },
+  "modality": {
+    "cardinal": [
+      "Cardinal sign: you start things. Start something sweet before the year ends.",
+      "Cardinal sign: first through the door, first to the table.",
+      "Cardinal sign: lead the parade, even if it's just to the snacks.",
+      "Cardinal sign: new beginnings love you back.",
+      "Cardinal sign: plant the flag, then plant yourself on the couch."
+    ],
+    "fixed": [
+      "Fixed sign: when you love something, you stay. That's a gift.",
+      "Fixed sign: you know your order, and nobody's changing it.",
+      "Fixed sign: steady as a motel sign that's been buzzing forever.",
+      "Fixed sign: hold on to the good traditions and drop the rest.",
+      "Fixed sign: you're the anchor at every table."
+    ],
+    "mutable": [
+      "Mutable sign: you go with the flow, even when the plan changes twice.",
+      "Mutable sign: you'd try every dish if they let you.",
+      "Mutable sign: change looks good on you, like a new sweater.",
+      "Mutable sign: shape-shifter energy. Perfect for Halloween.",
+      "Mutable sign: you roll with it, like a cat off a sofa."
+    ]
+  },
+  "rating": {
+    "1": [
+      "Meh, you said. Honest. The cats respect honesty more than tuna.",
+      "Meh is a valid review. We'll take it and make it better.",
+      "Not your night for it? Thank you for telling us. Truly.",
+      "Meh. Sushi gives most things a meh. You're in good company.",
+      "A 'meh' means you'll come back to see if we fixed it. Deal.",
+      "Meh today, maybe magic next time. The cards are patient.",
+      "You told the truth with a straight face. That's a rare talent."
+    ],
+    "2": [
+      "Fine, you said. Fine is a solid foundation. We'll build on it.",
+      "Fine is honest. We'll keep tinkering until it's more than fine.",
+      "Fine. Peppers says that about his dinner every night, and he finishes it.",
+      "A 'fine' from you means something. We heard it.",
+      "Fine like a cozy Tuesday. Not fireworks, but comfortable.",
+      "Fine is just good that hasn't warmed up yet.",
+      "Thanks for the fine. We'll be back next season, ready to impress."
+    ],
+    "3": [
+      "Good, you said. The cats nod. Good is good.",
+      "Good is a warm hand on a cold night. We'll take it.",
+      "Good! Sushi purred a little at that.",
+      "A solid good. Like a broth that's simmered just enough.",
+      "Good is how a friendship starts. Come back and see us.",
+      "Good food, good lot, good company. The cards agree.",
+      "Good is generous of you. We'll cook up a reason for 'great' next time."
+    ],
+    "4": [
+      "Real good! The cats did a little slow blink at you.",
+      "Real good means you'll be thinking about it tomorrow.",
+      "Real good is high praise from someone who clearly knows food.",
+      "Real good, you said. We're blushing behind the grill.",
+      "Real good means you're one bite from marrying it.",
+      "Peppers heard 'real good' and rolled over. That's his standing ovation.",
+      "Real good. That's the review we'll frame and hang in the kitchen."
+    ],
+    "5": [
+      "Marry it! The cats will officiate. Peppers has a little bow tie.",
+      "You'd marry the dish? We'll throw the rice. Well, the sev.",
+      "Marry it. A love story that starts in a motel lot. Iconic.",
+      "Marry it! Sushi is already planning the reception menu.",
+      "The highest score on the card. The cats are doing zoomies.",
+      "Marry it, you said. The pet parade is now your wedding procession.",
+      "Five out of five. Somebody tell the grill it's engaged."
+    ],
+    "none": [
+      "No rating? The cats will read your face instead. It looks happy.",
+      "You skipped the stars. Your secret's safe with us.",
+      "No score, no problem. Your being here says plenty.",
+      "Didn't rate it? The cats rated you instead: ten out of ten.",
+      "A rating left blank is a mystery. The cards love a mystery.",
+      "No verdict yet. Take your time. Dessert helps."
+    ]
+  },
+  "omen": [
+    "a jar of apple butter you forgot you had",
+    "a mustard stain shaped like a heart",
+    "one perfect leaf in your coat pocket",
+    "a hot dog bun toasted just right",
+    "a spare blanket on the passenger seat",
+    "cinnamon on the windowsill",
+    "a candle that lasts all evening",
+    "a pot of soup big enough to share",
+    "a cat on your keyboard right before you hit send",
+    "an onion that doesn't make you cry",
+    "a cider doughnut still warm in the bag",
+    "the last spoonful of pumpkin butter",
+    "a jar lid that opens on the first try",
+    "a fresh loaf left on your doorstep",
+    "a bat-shaped cloud over Route 209",
+    "a pinch of salt over the left shoulder",
+    "a can of beans at the back of the cupboard",
+    "a squash way too big for one person",
+    "a mug that keeps your coffee hot",
+    "extra mustard packets in your coat pocket",
+    "a moth landing on your recipe card",
+    "pickles that stay crunchy all winter",
+    "a sweater with a cracker in the pocket",
+    "maple syrup on everything",
+    "a slow cooker that smells like Sunday",
+    "a cookie tin full of actual cookies",
+    "a dinner invitation scrawled on a napkin",
+    "a porch pumpkin that lasts until December",
+    "the good spoon, freshly washed",
+    "a cranberry that bounces just right",
+    "garlic that finally peels without a fuss",
+    "a kettle singing right on cue",
+    "someone saving you the crispy edge",
+    "a fridge note in handwriting you love",
+    "a parade costume that fits on the first try",
+    "a jar of honey from a roadside stand",
+    "apples that keep all the way to spring",
+    "a table that seats one more than you planned",
+    "a single candy corn at the bottom of your bag",
+    "a bowl of clementines in December",
+    "rosemary growing on the windowsill",
+    "a soup that tastes better the next day",
+    "a grilled cheese at midnight",
+    "a tea that tastes like a hug",
+    "a stack of pancakes on a cold Saturday",
+    "fog over the ridge and a warm kitchen behind you",
+    "a crispy shallot in an unexpected place",
+    "two forks and one slice of pie",
+    "a picnic blanket in the trunk, just in case",
+    "the vacancy sign blinking hello",
+    "a jar of sauerkraut quietly doing its thing",
+    "a lantern on the porch, lit for you"
+  ],
+  "closing": [
+    "Come back and sit at our table anytime, {name}.",
+    "That's the reading. Go get another hot dog.",
+    "The cards have spoken, and they say hot dogs.",
+    "Happy Halloween from Peppers, Sushi and the whole kitchen.",
+    "See you at the next pop-up. Bring your appetite.",
+    "Go find your people in the lot. They're probably by the grill.",
+    "Pull another card if you dare. The cats are bored.",
+    "Stay cozy, stay spooky, stay fed, {name}.",
+    "The year is almost done. Finish it well fed.",
+    "Now go pet a dog in a costume. That's an order.",
+    "From the Catskills with love, and a little mustard.",
+    "Tuck this card in your pocket for the cold months.",
+    "The motel light stays on for you, {name}.",
+    "Sgt. Peppers and Sgt. Sushi are now off duty. Nap time.",
+    "Save the card, tag us, and keep the magic going.",
+    "That's all the cats will say. They want treats now.",
+    "Belonging looks good on you, {name}. Wear it all winter.",
+    "Thanks for eating with us under the Starlite sign.",
+    "End of reading. Beginning of dessert.",
+    "The cards are tired. The cats are tired. You are fabulous.",
+    "Go on, {name}. October won't last forever.",
+    "Whatever you ate tonight, it was fate. Delicious fate.",
+    "Off you go, into the leaves and the lamplight.",
+    "Same time next year? The cats are already saving your spot.",
+    "Keep a little Halloween in your pocket until spring.",
+    "May your buns be toasted and your nights be cozy.",
+    "The kitchen says thank you. The cats say feed us.",
+    "Walk home slowly, {name}. Look up. The stars are out for you.",
+    "This reading was brought to you by two very serious sergeants.",
+    "Until the next full moon and the next full plate.",
+    "Shuffle again, or go hug someone you came with."
+  ]
+}
