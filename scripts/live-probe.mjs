@@ -12,6 +12,7 @@ page.on('response', async (r) => {
 await page.goto(URL);
 await page.getByRole('button', { name: 'Pull a card' }).click();
 await page.getByLabel('Your name').fill('Code probe (delete me)');
+await page.locator('input[name="dish"][value="hex"]').check({ force: true }); // a dish ticked: the fortune must still be a cat card
 await page.locator('#rating label', { hasText: 'Fine' }).click();
 await page.getByRole('button', { name: 'Read my cards' }).click();
 await page.locator('#flip.open').waitFor({ timeout: 20_000 });
