@@ -30,6 +30,7 @@ function allLines() {
 
 // Spoken aloud at about 2.6 words a second, 15 words is under six seconds.
 const MAX_WORDS = 15;
+const MAX_DISH_WORDS = 13;
 
 test("the bank has the slot counts the handoff asks for", () => {
   for (const c of [...CAT_CARDS, ...DISH_CARDS]) assert.ok(bank.opening[c.id]?.length >= 6, `opening.${c.id}`);
@@ -57,7 +58,9 @@ test("no duplicate lines anywhere in the bank", () => {
 test("every line reads aloud in under six seconds and is clean text", () => {
   for (const { path, line } of allLines()) {
     const words = line.trim().split(/\s+/).length;
-    assert.ok(words <= MAX_WORDS, `${path} has ${words} words: "${line}"`);
+    // Dish lines are read after "The second card is X. Sgt. Y says:", so they stay shorter.
+    const max = path.startsWith("dish.") ? MAX_DISH_WORDS : MAX_WORDS;
+    assert.ok(words <= max, `${path} has ${words} words: "${line}"`);
     assert.equal(line, line.trim(), `${path} has stray whitespace`);
     assert.ok(!/\{(?!name\})/.test(line), `${path} has an unknown placeholder`);
   }
