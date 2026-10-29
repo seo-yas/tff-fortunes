@@ -26,6 +26,11 @@ function ensureBank() {
 ensureBank().catch(() => {});
 const withTimeout = (p, ms) => Promise.race([p, new Promise((r) => setTimeout(r, ms))]);
 const artReady = fetch('cards/cats/index.json').then((r) => (r.ok ? r.json() : [])).then((ids) => { catArt = new Set(ids); }).catch(() => {});
+// Where the painted numeral and title boxes sit on each cat card (fractions of the 480x720 art). Optional: without it the CSS defaults apply.
+let boxes = {};
+const boxesReady = fetch('cards/cats/boxes.json').then((r) => (r.ok ? r.json() : {})).then((b) => { boxes = b || {}; }).catch(() => {});
+// The card faces are lettered in Fraunces; fit and canvas measuring both need it loaded.
+const fontsReady = Promise.all([document.fonts.load('600 100px Fraunces'), document.fonts.load('italic 400 100px Fraunces'), document.fonts.load('400 40px "Instrument Sans"')]).then(() => document.fonts.ready).catch(() => {});
 
 function dishFor(cardId, dishes) {
   const id = String(cardId || '').toLowerCase();
@@ -55,6 +60,58 @@ function placeholder(numeral, title) {
   return ph;
 }
 
+// Where the empty boxes sit when boxes.json is missing (the single measurement of the r1 art).
+const BOX = { num: { x: .156, y: .011, w: .688, h: .07 }, title: { x: .108, y: .878, w: .783, h: .085 } };
+
+/* ---------- fitted lettering ----------
+   The card is a fixed 2:3, so its height is 150 cqw of its own width. Font sizes are in cqw and the box widths scale with
+   the same width, so one fit holds at every card size: measure each text once (canvas, same font), never the DOM. */
+const CARD_H = 150, PAD = .06, CAP_FILL = .62, TITLE_SPACING = .06;
+// Fraunces has an optical-size axis: glyph widths change with font size unless it is pinned. The lettering pins it
+// (font-optical-sizing: none in styles.css), which makes a width measured once true at every card size.
+let ruler = null;
+const emCache = new Map();
+function emWidth(text, spacing = 0, upper = false) {
+  const key = `${spacing}|${upper}|${text}`;
+  if (emCache.has(key)) return emCache.get(key);
+  if (!ruler) {
+    ruler = document.createElement('span');
+    ruler.className = 'ov-ruler';
+    ruler.setAttribute('aria-hidden', 'true');
+    document.body.append(ruler);
+  }
+  ruler.style.letterSpacing = `${spacing}em`;
+  ruler.style.textTransform = upper ? 'uppercase' : 'none';
+  ruler.textContent = text;
+  const em = ruler.getBoundingClientRect().width / 100; // the ruler is set at 100px
+  emCache.set(key, em);
+  return em;
+}
+function boxOf(cardId) {
+  const b = boxes[cardId];
+  return { num: b?.num || BOX.num, title: b?.title || BOX.title, placed: !!b?.num && !!b?.title };
+}
+// One maximum per kind for every card, from the shortest box: DEATH is not bigger than THE HIGH PRIESTESS.
+function capOf(kind) {
+  const hs = Object.entries(boxes).filter(([k, b]) => !k.startsWith('_') && b?.[kind]).map(([, b]) => b[kind].h);
+  return CAP_FILL * (hs.length ? Math.min(...hs) : BOX[kind].h) * CARD_H;
+}
+// Font sizes in cqw (percent of card width) for a cat card's numeral and title.
+function fontSizes(cardId, numeral, title) {
+  const b = boxOf(cardId);
+  const fit = (box, text, spacing, cap) => {
+    const em = emWidth(text, spacing, spacing > 0);
+    return Math.min(cap, em ? (box.w * 100 * (1 - 2 * PAD) * .985) / em : cap);
+  };
+  return {
+    num: fit(b.num, numeral || '', 0, capOf('num')),
+    title: fit(b.title, String(title || ''), TITLE_SPACING, capOf('title')),
+  };
+}
+function place(el, box) {
+  Object.assign(el.style, { left: `${box.x * 100}%`, top: `${box.y * 100}%`, width: `${box.w * 100}%`, height: `${box.h * 100}%`, paddingInline: `${box.w * PAD * 100}%` });
+}
+
 // An <img> that turns into a placeholder if the file is missing; a missing card never breaks a draw.
 // Cat cards are painted with empty boxes: the numeral and title are lettered on top (overlay).
 function cardFace(cardId, numeral, title, dishes, overlay = true) {
@@ -75,13 +132,15 @@ function cardFace(cardId, numeral, title, dishes, overlay = true) {
   const t = Object.assign(document.createElement('span'), { className: 'ov title', textContent: title || '' });
   num.setAttribute('aria-hidden', 'true');
   t.setAttribute('aria-hidden', 'true');
+  const b = boxOf(cardId);
+  if (b.placed) { place(num, b.num); place(t, b.title); }
+  const fit = () => { const f = fontSizes(cardId, numeral, title); num.style.fontSize = `${f.num}cqw`; t.style.fontSize = `${f.title}cqw`; };
+  fit();
+  fontsReady.then(() => { emCache.clear(); fit(); }); // measured again once the font is certainly there
   art.append(img, num, t);
   img.onerror = () => art.replaceWith(placeholder(numeral, title));
   return art;
 }
-
-// Where the empty boxes sit on the painted cat cards, as fractions of the card (measured on the r1 art).
-const BOX = { num: { x: .156, y: .011, w: .688, h: .07 }, title: { x: .108, y: .878, w: .783, h: .085 } };
 
 /* ---------- screens ---------- */
 function show(id) {
@@ -188,13 +247,6 @@ function cast(v, seed) {
 
 const cap = (t) => (t ? t[0].toUpperCase() + t.slice(1) : '');
 
-function lineList(fortune) {
-  const L = fortune.lines || {};
-  const speaker = secondCard(fortune)?.name;
-  const dish = L.dish && speaker ? `${speaker} says: ${L.dish}` : L.dish;
-  return [L.opening, dish, L.sign, L.rating, L.closing].filter(Boolean);
-}
-
 // A dish card is printed with its menu numeral (I-VI); show that one, so the title block matches the art.
 // On a dish card the dish name leads (the arcana is printed under it on the art).
 function titleLine(fortune, dishes) {
@@ -213,8 +265,11 @@ function secondCard(fortune) {
 function render(v, fortune) {
   $('#r-name').textContent = firstName(v.name);
   $('#r-title').textContent = titleLine(fortune, v.dishes);
-  $('#r-lines').replaceChildren(...lineList(fortune).map((t) => Object.assign(document.createElement('p'), { textContent: t })));
-  $('#r-omen').textContent = cap(fortune.lines?.omen || '');
+  $('#r-modeled').textContent = fortune.modeledBy ? `Modeled by ${fortune.modeledBy}` : '';
+  $('#r-tagline').textContent = fortune.tagline || '';
+  $('#r-text').textContent = fortune.reading || '';
+  $('#r-omen').textContent = cap(fortune.omen || '');
+  $('#r-closing').textContent = fortune.closing || '';
   $('#card-front').replaceChildren(cardFace(fortune.cardId, fortune.numeral, fortune.title, v.dishes));
 
   const second = $('#r-second');
@@ -225,12 +280,16 @@ function render(v, fortune) {
     mini.className = 'mini';
     mini.append(cardFace(c2.cardId, c2.numeral, c2.title, [], false));
     const p = document.createElement('p');
-    const ate = dishFor(c2.cardId, []);
-    p.textContent = ate
-      ? `${c2.name || 'The cats'} turned over what you ate: ${ate.name}.`
-      : c2.name ? `${c2.name} pulled your second card: ${c2.title}.` : `Your second card: ${c2.title}.`;
+    p.textContent = secondCaption(c2);
     second.append(mini, p);
   }
+}
+
+// Two shapes only: a dish second card, or a cat second card named with who pulled it.
+function secondCaption(c2) {
+  const dish = dishFor(c2.cardId, []);
+  if (dish) return `Your second card: ${dish.name}.`;
+  return c2.name ? `${c2.name} pulled your second card: ${c2.title}.` : `Your second card: ${c2.title}.`;
 }
 
 async function shuffle() {
@@ -263,7 +322,7 @@ async function reveal(v, seed, source) {
   setBusy(true);
   $('#draw-error').hidden = true;
   try {
-    await withTimeout(artReady, 1500); // art is optional: placeholders cover a slow index
+    await withTimeout(Promise.all([artReady, boxesReady, fontsReady]), 1500); // art, boxes and the card font are optional: placeholders and CSS defaults cover a slow load
     await ensureBank();
     const fortune = cast(v, seed);
     current = { v, fortune };
@@ -380,23 +439,64 @@ function loadImg(src) {
   });
 }
 
-function wrap(ctx, text, x, y, maxW, lh, maxLines = 99) {
-  const words = String(text).split(/\s+/);
-  let line = '', lines = 0;
-  for (const w of words) {
+// Break text into lines no wider than maxW at the context's current font. Never drops a word.
+function breakLines(ctx, text, maxW) {
+  const lines = [];
+  let line = '';
+  for (const w of String(text).split(/\s+/).filter(Boolean)) {
     const test = line ? `${line} ${w}` : w;
-    if (ctx.measureText(test).width > maxW && line) {
-      ctx.fillText(line, x, y); y += lh; line = w;
-      if (++lines >= maxLines) return y;
-    } else line = test;
+    if (ctx.measureText(test).width > maxW && line) { lines.push(line); line = w; } else line = test;
   }
-  if (line) { ctx.fillText(line, x, y); y += lh; }
-  return y;
+  if (line) lines.push(line);
+  return lines;
 }
 
-async function cardImage() {
-  const { v, fortune } = current;
-  await document.fonts.ready;
+// Where the words go on the 1080x1920 frame, below the title block, at body size px. The logo's top is H-250; the text must clear it.
+// Canvas text picks its optical size from the pixel size, so the fit is solved at the size it will be drawn: a few passes converge.
+function fitCanvasPx(x, text, boxW, capPx, spacing) {
+  const avail = boxW * (1 - 2 * PAD) * .985;
+  let px = capPx;
+  for (let i = 0; i < 6; i++) {
+    x.font = `600 ${px}px Fraunces, serif`;
+    const w = x.measureText(text).width + text.length * spacing * px;
+    px = Math.min(capPx, px * avail / w);
+  }
+  return px;
+}
+
+const SHARE_TOP = 1268, SHARE_LIMIT = 1650, W_TEXT = 1080 - 180;
+function planShare(x, f, px) {
+  const items = [];
+  let y = SHARE_TOP, bottom = 0, readingLines = 0;
+  const add = (kind, font, color, text, size, lh) => {
+    x.font = font;
+    for (const t of breakLines(x, text, W_TEXT)) {
+      items.push({ font, color, text: t, y });
+      bottom = Math.max(bottom, y + size * .28); // descent below the baseline
+      y += lh;
+      if (kind === 'reading') readingLines++;
+    }
+  };
+  const tag = Math.round(px * 1.15);
+  add('tagline', `italic 400 ${tag}px Fraunces, Georgia, serif`, '#d4b469', f.tagline || '', tag, tag * 1.25);
+  y += 8;
+  add('reading', `400 ${px}px "Instrument Sans", sans-serif`, '#faf6f0', f.reading || '', px, px * 1.36);
+  y += 14;
+  add('omen', `italic 400 ${px}px Fraunces, serif`, '#8fa57f', `Pantry omen: ${cap(f.omen || '')}`, px, px * 1.3);
+  return { items, bottom, readingLines };
+}
+
+// 40px; a reading that wraps past 4 lines steps down 10% (36px) and wraps again; then smaller only if the logo would be touched. Nothing is cut.
+function layoutShare(x, f) {
+  let px = 40, plan = planShare(x, f, px);
+  if (plan.readingLines > 4) { px = 36; plan = planShare(x, f, px); }
+  while (plan.bottom > SHARE_LIMIT && px > 24) { px -= 2; plan = planShare(x, f, px); }
+  return { ...plan, px };
+}
+
+async function cardImage(cur = current) {
+  const { v, fortune } = cur;
+  await fontsReady;
   const W = 1080, H = 1920, c = document.createElement('canvas');
   c.width = W; c.height = H;
   const x = c.getContext('2d');
@@ -422,10 +522,17 @@ async function cardImage() {
       x.shadowColor = 'transparent';
       x.fillStyle = '#33302e';
       x.textBaseline = 'middle';
-      x.font = '600 40px Fraunces, serif';
-      x.fillText(fortune.numeral || '', W / 2, cy + (BOX.num.y + BOX.num.h / 2) * ch, BOX.num.w * cw - 20);
-      x.font = '600 38px Fraunces, serif';
-      x.fillText((fortune.title || '').toUpperCase(), W / 2, cy + (BOX.title.y + BOX.title.h / 2) * ch, BOX.title.w * cw - 30);
+      const b = boxOf(fortune.cardId);
+      // no maxWidth: it would squeeze the glyphs; the size is fitted to the box (minus padding) and capped like the page
+      const nPx = fitCanvasPx(x, fortune.numeral || '', b.num.w * cw, capOf('num') * cw / 100, 0);
+      x.font = `600 ${nPx}px Fraunces, serif`;
+      x.fillText(fortune.numeral || '', cx + (b.num.x + b.num.w / 2) * cw, cy + (b.num.y + b.num.h / 2) * ch);
+      const title = (fortune.title || '').toUpperCase();
+      const tPx = fitCanvasPx(x, title, b.title.w * cw, capOf('title') * cw / 100, TITLE_SPACING);
+      x.font = `600 ${tPx}px Fraunces, serif`;
+      if ('letterSpacing' in x) x.letterSpacing = `${TITLE_SPACING * tPx}px`;
+      x.fillText(title, cx + (b.title.x + b.title.w / 2) * cw, cy + (b.title.y + b.title.h / 2) * ch);
+      if ('letterSpacing' in x) x.letterSpacing = '0px';
       x.textBaseline = 'alphabetic';
     }
   }
@@ -447,12 +554,14 @@ async function cardImage() {
   x.fillStyle = '#fff8fb'; x.fillText(title, 0, 4, W - 160);
   x.restore();
 
-  x.fillStyle = '#faf6f0';
-  x.font = '400 40px "Instrument Sans", sans-serif';
-  let y = wrap(x, fortune.lines?.opening || '', W / 2, 1250, W - 180, 54, 3);
-  y = wrap(x, fortune.lines?.dish || '', W / 2, y + 10, W - 180, 54, 3);
-  x.fillStyle = '#8fa57f'; x.font = 'italic 400 40px Fraunces, serif';
-  y = wrap(x, `Pantry omen: ${cap(fortune.lines?.omen || '')}`, W / 2, y + 30, W - 200, 52, 3);
+  if (fortune.modeledBy) {
+    x.fillStyle = '#d9d0c4'; x.font = 'italic 400 30px Fraunces, serif';
+    x.fillText(`Modeled by ${fortune.modeledBy}`, W / 2, 1208);
+  }
+
+  const plan = layoutShare(x, fortune);
+  for (const it of plan.items) { x.font = it.font; x.fillStyle = it.color; x.fillText(it.text, W / 2, it.y); }
+  window.__fff.lastImageLayout = { bottom: plan.bottom, readingLines: plan.readingLines, readingPx: plan.px };
 
   const logo = await loadImg('img/logo-ff-white.png');
   if (logo) x.drawImage(logo, W / 2 - 50, H - 250, 100, 119);
@@ -539,10 +648,30 @@ function init() {
   $('#save').addEventListener('click', save);
   tilt();
   flush();
-  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  if ('serviceWorker' in navigator) {
+    watchForNewWorker();
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+}
+
+// A phone that already runs this page picks up a new release on its next quiet moment: one reload, and only from the landing
+// screen or an untouched form, so a typed name or a draw in flight is never lost. Otherwise the next visit is the new one.
+function watchForNewWorker() {
+  if (!navigator.serviceWorker.controller) return; // first install: nothing old to replace
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (reloaded || busy) return;
+    const quiet = !$('#landing').hidden || (!$('#form').hidden && !$('#f-name').value);
+    if (!quiet) return;
+    reloaded = true;
+    location.reload();
+  });
 }
 
 init();
 
 // test hook: lets the Playwright gate drive the page without timing guesses
-window.__fff = { get current() { return current; }, queue: () => store.get(QUEUE_KEY, []), flush, cardImage };
+window.__fff = {
+  get current() { return current; }, queue: () => store.get(QUEUE_KEY, []), flush, cardImage, cardFace, engine,
+  ready: () => Promise.all([artReady, boxesReady, fontsReady, ensureBank()]), lastImageLayout: null,
+};

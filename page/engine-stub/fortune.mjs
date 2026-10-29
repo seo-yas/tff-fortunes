@@ -56,14 +56,15 @@ export function drawFortune({ name = '', birthday = '', rating = 3, dishes = [],
   const dish = known.length ? DISH_CARD[pick(known)] : null; // the cat card is the fortune; the dish is the second card
   const card = pick(CAT_CARDS);
   const cat = dish || pick(CAT_CARDS.filter((c) => c.cardId !== card.cardId));
-  const sign = signFor(birthday);
-  const lines = {
-    opening: `${name || 'Friend'}, the deck has been waiting for you.`,
-    dish: known.length ? 'Sgt. Sushi watched you eat that and approves.' : 'Sgt. Peppers wants to know why your plate is empty.',
-    sign: sign ? `${sign} season agrees with you.` : 'The stars kept your birthday a secret.',
-    rating: ['Meh is honest. We respect honest.', 'Fine is a start.', 'Good is good.', 'Loved it? Say it louder.', 'Marry it. We will cater.'][Math.max(0, Math.min(4, rating - 1))],
-    omen: 'A jar opens on the first try this week.',
-    closing: 'See you after dark.',
+  const tagline = 'Leap first, ask later';
+  const reading = `${name || 'Friend'}, the deck has been waiting for you. Say yes to the weird invitation this winter.`;
+  const omen = 'a jar opens on the first try this week';
+  const closing = 'See you after dark.';
+  const lines = { tagline, text: reading, omen, closing };
+  return {
+    cardId: card.cardId, title: card.title, numeral: card.numeral, dishName: dish ? dish.title : null,
+    cat: { cardId: cat.cardId, title: cat.title, numeral: cat.numeral, name: 'Sgt. Sushi' },
+    modeledBy: 'Sgt. Sushi', tagline, reading, omen, closing, lines,
+    text: [tagline + '.', reading, `Pantry omen: ${omen}.`, closing].join(' '), seed, stub: true,
   };
-  return { cardId: card.cardId, title: card.title, numeral: card.numeral, cat: { cardId: cat.cardId, title: cat.title, numeral: cat.numeral, name: 'Sgt. Sushi' }, lines, text: Object.values(lines).join(' '), seed, stub: true };
 }

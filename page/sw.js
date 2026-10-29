@@ -10,7 +10,7 @@ const CORE = [
   'img/logo-ff-white.png', 'cards/back.webp',
   'cards/dish/brodo.webp', 'cards/dish/beetlejuice.webp', 'cards/dish/ichabod.webp',
   'cards/dish/hex.webp', 'cards/dish/aloo.webp', 'cards/dish/ghosted.webp',
-  'cards/cats/index.json',
+  'cards/cats/index.json', 'cards/cats/boxes.json',
 ];
 
 self.addEventListener('install', (e) => {
