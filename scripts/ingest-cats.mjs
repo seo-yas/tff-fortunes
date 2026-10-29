@@ -2,8 +2,8 @@
 // usage: node scripts/ingest-cats.mjs [artDir]
 // Takes, per card id, the file named in manifest.json if present, else the newest <id>*.png|jpg|webp.
 import { readdirSync, existsSync, readFileSync, writeFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
-import { execFileSync } from 'node:child_process';
+import { join, resolve } from 'node:path';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 const ART = process.argv[2] || 'C:/TFF/Haque Brain v2/04-The-Freckled-Fork/brand/photos/arcana-source/generated/fortunes-r1';
 const OUT = 'page/cards/cats';
@@ -34,3 +34,17 @@ for (const id of IDS) {
 }
 writeFileSync(join(OUT, 'index.json'), JSON.stringify(done) + '\n');
 console.log(`ingested ${done.length}/24; missing: ${missing.join(', ') || 'none'}`);
+remeasureBoxes();
+
+// measure-boxes.py globs cats/*.avif and writes boxes.json relative to its cwd, so it runs inside page/cards.
+function remeasureBoxes() {
+  const script = resolve('scripts/measure-boxes.py');
+  const run = spawnSync('python', [script], { cwd: 'page/cards', stdio: 'inherit' });
+  if (run.error || run.status !== 0) {
+    const why = run.error ? run.error.message : `exit ${run.status}`;
+    console.error(`WARNING: page/cards/cats/boxes.json is now STALE (measure-boxes.py failed: ${why}).`);
+    console.error('Fix Python (3 with Pillow and numpy), then run: cd page/cards && python ../../scripts/measure-boxes.py');
+    process.exit(1);
+  }
+  console.log('re-measured page/cards/cats/boxes.json');
+}
