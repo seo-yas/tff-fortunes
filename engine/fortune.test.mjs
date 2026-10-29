@@ -299,3 +299,34 @@ test("loadBank reads lines.json AND readings.json next to the engine, and drawFo
   assert.equal(bare.reading, readings.cards[bare.cardId].text);
   assert.throws(() => drawFortune(input, bank, {}), /No readings/);
 });
+
+test("loadBank over http: loads a served bank, and an HTTP error status (even with a JSON body) throws naming the URL and status", async () => {
+  const { createServer } = await import("node:http");
+  const files = { "/ok/lines.json": JSON.stringify(bank), "/ok/readings.json": JSON.stringify(readings) };
+  const server = createServer((req, res) => {
+    const body = files[req.url];
+    res.writeHead(body ? 200 : 404, { "content-type": "application/json" });
+    res.end(body ?? '{"error":"Not found"}');
+  });
+  await new Promise((r) => server.listen(0, "127.0.0.1", r));
+  const root = `http://127.0.0.1:${server.address().port}`;
+  try {
+    assert.deepEqual(await loadBank(new URL(`${root}/ok/x.mjs`)), bank);
+    await assert.rejects(loadBank(new URL(`${root}/missing/x.mjs`)), /missing[/](lines|readings)[.]json: HTTP 404/);
+    assert.deepEqual(await loadBank(new URL(`${root}/ok/x.mjs`)), bank);
+  } finally {
+    server.close();
+  }
+});
+
+test("make-draws-fixture refuses to overwrite the frozen draws-r1.json baseline", async () => {
+  const { spawnSync } = await import("node:child_process");
+  const { fileURLToPath } = await import("node:url");
+  const fixture = fileURLToPath(new URL("../tests/fixtures/draws-r1.json", import.meta.url));
+  const before = readFileSync(fixture, "utf8");
+  const script = fileURLToPath(new URL("../scripts/make-draws-fixture.mjs", import.meta.url));
+  const r = spawnSync(process.execPath, [script], { encoding: "utf8" });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /refusing to overwrite/);
+  assert.equal(readFileSync(fixture, "utf8"), before);
+});

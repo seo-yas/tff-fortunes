@@ -1,11 +1,11 @@
-// Writes tests/fixtures/draws-r1.json: the card picks of the round 1 engine
+// Writes tests/fixtures/draws-r1.json ONLY if it is absent (it is a frozen baseline; see main()): the card picks of the round 1 engine
 // (commit bd51ecd) for a fixed input x seed grid. The round 2 engine must
 // reproduce every row. Run from anywhere: node scripts/make-draws-fixture.mjs
 //
 // With --r2 it writes tests/fixtures/draws-r2.json instead: the FULL return
 // objects of the round 2 engine for every 10th input of the same grid. The
 // node test and the browser test both check the engine against that file.
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { drawFortune, setBank, setReadings, DISHES } from "../engine/fortune.mjs";
@@ -86,6 +86,13 @@ export function formatFixture(rows, grid = GRID) {
 }
 
 function main() {
+  if (!process.argv.includes("--r2") && existsSync(OUT)) {
+    // draws-r1.json is the frozen round 1 baseline. This script draws with the CURRENT engine,
+    // so rewriting it would let a regression become the expectation.
+    console.error(`refusing to overwrite ${OUT}: the round 1 baseline is frozen (engine ${ENGINE_COMMIT}). Delete it by hand only to rebuild from a checkout of that commit.`);
+    process.exit(1);
+  }
+
   const read = (f) => JSON.parse(readFileSync(join(ROOT, "engine", f), "utf8"));
   const bank = read("lines.json");
   const readings = read("readings.json");

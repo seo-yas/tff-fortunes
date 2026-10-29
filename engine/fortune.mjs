@@ -166,7 +166,11 @@ export function setReadings(readings) {
 }
 
 async function readJson(url) {
-  if (url.protocol !== "file:") return (await fetch(url)).json();
+  if (url.protocol !== "file:") {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Could not load ${url.href}: HTTP ${res.status}`);
+    return res.json();
+  }
   const { readFile } = await import("node:fs/promises");
   return JSON.parse(await readFile(url, "utf8"));
 }
