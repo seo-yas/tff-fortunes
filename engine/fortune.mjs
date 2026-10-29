@@ -151,6 +151,7 @@ function weighted(rand, items, weight) {
 }
 
 let loadedBank = null;
+let loadedReadings = null;
 
 // Use your own bank (e.g. in tests, or if the page inlines it).
 export function setBank(bank) {
@@ -158,33 +159,51 @@ export function setBank(bank) {
   return bank;
 }
 
-// Fetches lines.json next to this file. Works over http(s) in the browser
-// (and from the service-worker cache) and from disk in Node.
+// Jess's readings live apart from the line bank: { cards: { <cardId>: { tagline, text } }, omens: [12] }.
+export function setReadings(readings) {
+  loadedReadings = readings;
+  return readings;
+}
+
+async function readJson(url) {
+  if (url.protocol !== "file:") return (await fetch(url)).json();
+  const { readFile } = await import("node:fs/promises");
+  return JSON.parse(await readFile(url, "utf8"));
+}
+
+// Fetches lines.json and readings.json next to this file. Works over http(s) in
+// the browser (and from the service-worker cache) and from disk in Node.
+// Returns the line bank; the readings are stored for drawFortune.
 export async function loadBank(base = import.meta.url) {
-  const url = new URL("./lines.json", base);
-  let lines;
-  if (url.protocol === "file:") {
-    const { readFile } = await import("node:fs/promises");
-    lines = JSON.parse(await readFile(url, "utf8"));
-  } else {
-    lines = await (await fetch(url)).json();
-  }
+  const [lines, readings] = await Promise.all(
+    ["./lines.json", "./readings.json"].map((f) => readJson(new URL(f, base))),
+  );
+  setReadings(readings);
   return setBank(lines);
 }
 
 const fill = (line, name) => line.replace(/\{name\}/g, name);
+const withStop = (tagline) => (/[.!?…]$/.test(tagline) ? tagline : `${tagline}.`);
+const MODELED_BY = { peppers: CATS.peppers, sushi: CATS.sushi, both: `${CATS.peppers} & ${CATS.sushi}` };
 
 /**
- * drawFortune({ name, birthday, rating, dishes, seed }, bank?)
- * -> { cardId, title, numeral, cat, lines, text, seed, zodiac, dish, rating }
+ * drawFortune({ name, birthday, rating, dishes, seed }, bank?, readings?)
+ * -> { cardId, title, numeral, cat, dishName, modeledBy, tagline, reading, omen, closing,
+ *      lines: { tagline, text, omen, closing }, text, seed, zodiac, dish, rating }
  *
+ * Jess's fixed reading (2026-10-29): the message is cute, funny and positive and
+ * never about what they ate, their sign or their rating. `tagline` and `reading`
+ * are her words for the first card, verbatim; `omen` is one of her 12 pantry
+ * omens; `closing` is a line from the bank. `text` joins them.
  * The same submission and seed always give the same reading. `seed` is a
  * 32-bit unsigned integer; when absent a crypto-random one is drawn and
  * returned so the page can store it with the submission.
- * The name is not HTML-escaped; the page must insert `text` as text.
+ * The name only fills {name} in the closing and is not HTML-escaped; the page
+ * must insert `text` as text.
  */
-export function drawFortune(input = {}, bank = loadedBank) {
+export function drawFortune(input = {}, bank = loadedBank, readings = loadedReadings ?? bank?.readings) {
   if (!bank) throw new Error("No line bank: call loadBank() or setBank(lines) first, or pass the bank.");
+  if (!readings?.cards || !readings.omens) throw new Error("No readings: call loadBank() or setReadings(readings) first, or pass the readings.");
   const seed = input.seed == null || input.seed === "" ? randomSeed() : Number(input.seed) >>> 0;
   const rand = rng(seed);
 
@@ -208,33 +227,13 @@ export function drawFortune(input = {}, bank = loadedBank) {
   const speakerKey = voice === "both" ? pick(rand, ["peppers", "sushi"]) : voice;
   const speaker = CATS[speakerKey];
 
-  const signLine = zodiac ? pick(rand, bank.sign[zodiac.sign]) : pick(rand, bank.sign.none);
-  let traitLine = "";
-  if (zodiac) {
-    traitLine = rand() < 4 / 7
-      ? pick(rand, bank.element[zodiac.element])
-      : pick(rand, bank.modality[zodiac.modality]);
-  }
-
-  const lines = {
-    opening: fill(pick(rand, bank.opening[card.id]), name),
-    dish: pick(rand, bank.dish[dishPick?.id ?? "none"]),
-    sign: traitLine ? `${signLine} ${traitLine}` : signLine,
-    rating: pick(rand, bank.rating[rating ?? "none"]),
-    omen: pick(rand, bank.omen),
-    closing: fill(pick(rand, bank.closing), name),
-  };
-
-  const text = [
-    lines.opening,
-    dishCard
-      ? `The second card is what you ate, ${dishCard.dishName}. ${speaker} says: "${lines.dish}"`
-      : `The second card is ${second.title}. ${speaker} says: "${lines.dish}"`,
-    lines.sign,
-    lines.rating,
-    `Pantry omen: ${lines.omen}.`,
-    lines.closing,
-  ].join(" ");
+  // Everything above is the round 1 pick order and must not change (tests/fixtures/draws-r1.json).
+  const mine = readings.cards[card.id];
+  if (!mine) throw new Error(`No reading for card ${card.id}.`);
+  const omen = pick(rand, readings.omens);
+  const closing = fill(pick(rand, bank.closing), name);
+  const lines = { tagline: mine.tagline, text: mine.text, omen, closing };
+  const text = [withStop(mine.tagline), mine.text, `Pantry omen: ${omen}.`, closing].join(" ");
 
   return {
     cardId: card.id,
@@ -242,6 +241,11 @@ export function drawFortune(input = {}, bank = loadedBank) {
     numeral: card.numeral,
     dishName: dishCard?.dishName ?? null,
     cat: { cardId: second.id, title: second.title, numeral: second.numeral, name: speaker },
+    modeledBy: MODELED_BY[card.cat],
+    tagline: mine.tagline,
+    reading: mine.text,
+    omen,
+    closing,
     lines,
     text,
     seed,
