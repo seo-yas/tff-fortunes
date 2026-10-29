@@ -98,3 +98,36 @@ test('smoke: the six dish faces carry no lettering overlay', async ({ page }) =>
   }, DISH_IDS);
   for (const r of res) { expect(r.ov, r.id).toBe(0); expect(r.src, r.id).toBe(`cards/dish/${r.id}.webp`); }
 });
+
+// Gemini Round B #5: a boxes.json that arrives after the face was built still places the lettering.
+test('a face built before a 2.5 s late boxes.json is placed in its box once the boxes arrive', async ({ page }) => {
+  await page.route(/cards\/cats\/boxes\.json$/, async (route) => { await new Promise((r) => setTimeout(r, 2500)); await route.continue(); });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const id = 'death';
+  const r = await page.evaluate(async ({ id }) => {
+    const c = window.__fff.engine.CAT_CARDS.find((k) => k.id === id) || window.__fff.engine.CAT_CARDS[0];
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'position:absolute;left:0;top:0;width:273px;aspect-ratio:2/3;z-index:99';
+    for (let i = 0; i < 100; i++) { // the art index is not delayed; only boxes.json is
+      wrap.replaceChildren(window.__fff.cardFace(c.id, c.numeral, c.title, [], true));
+      if (wrap.querySelector('.art')) break;
+      await new Promise((res) => setTimeout(res, 20));
+    }
+    document.body.append(wrap);
+    const early = wrap.querySelector('.ov.title').style.left; // before boxes.json: unplaced
+    await window.__fff.ready();
+    await new Promise((res) => requestAnimationFrame(() => requestAnimationFrame(res)));
+    const art = wrap.querySelector('.art').getBoundingClientRect();
+    const rg = document.createRange(); rg.selectNodeContents(wrap.querySelector('.ov.title'));
+    const t = rg.getBoundingClientRect();
+    return { id: c.id, early, late: wrap.querySelector('.ov.title').style.left, art: { l: art.left, t: art.top, w: art.width, h: art.height }, t: { l: t.left, r: t.right, t: t.top, b: t.bottom } };
+  }, { id });
+  const b = boxes[r.id].title;
+  expect(r.early, 'unplaced before the boxes arrive').toBe('');
+  expect(r.late, 'placed after').not.toBe('');
+  expect(r.t.t).toBeGreaterThanOrEqual(r.art.t + b.y * r.art.h - EPS);
+  expect(r.t.b).toBeLessThanOrEqual(r.art.t + (b.y + b.h) * r.art.h + EPS);
+  expect(r.t.l).toBeGreaterThanOrEqual(r.art.l + b.x * r.art.w - EPS);
+  expect(r.t.r).toBeLessThanOrEqual(r.art.l + (b.x + b.w) * r.art.w + EPS);
+});

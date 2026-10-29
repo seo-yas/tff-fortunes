@@ -93,7 +93,7 @@ function boxOf(cardId) {
 }
 // One maximum per kind for every card, from the shortest box: DEATH is not bigger than THE HIGH PRIESTESS.
 function capOf(kind) {
-  const hs = Object.entries(boxes).filter(([k, b]) => !k.startsWith('_') && b?.[kind]).map(([, b]) => b[kind].h);
+  const hs = Object.entries(boxes).filter(([k, b]) => !k.startsWith('_') && Number.isFinite(b?.[kind]?.h) && b[kind].h > 0).map(([, b]) => b[kind].h);
   return CAP_FILL * (hs.length ? Math.min(...hs) : BOX[kind].h) * CARD_H;
 }
 // Font sizes in cqw (percent of card width) for a cat card's numeral and title.
@@ -136,7 +136,12 @@ function cardFace(cardId, numeral, title, dishes, overlay = true) {
   if (b.placed) { place(num, b.num); place(t, b.title); }
   const fit = () => { const f = fontSizes(cardId, numeral, title); num.style.fontSize = `${f.num}cqw`; t.style.fontSize = `${f.title}cqw`; };
   fit();
-  fontsReady.then(() => { emCache.clear(); fit(); }); // measured again once the font is certainly there
+  // measured and placed again once boxes.json and the font have certainly settled, so a late boxes.json still places the lettering
+  Promise.all([boxesReady, fontsReady]).then(() => {
+    const late = boxOf(cardId);
+    if (late.placed) { place(num, late.num); place(t, late.title); }
+    emCache.clear(); fit();
+  });
   art.append(img, num, t);
   img.onerror = () => art.replaceWith(placeholder(numeral, title));
   return art;
@@ -459,6 +464,7 @@ function fitCanvasPx(x, text, boxW, capPx, spacing) {
   for (let i = 0; i < 6; i++) {
     x.font = `600 ${px}px Fraunces, serif`;
     const w = x.measureText(text).width + text.length * spacing * px;
+    if (!text || !(w > 0)) return capPx;
     px = Math.min(capPx, px * avail / w);
   }
   return px;
@@ -496,7 +502,7 @@ function layoutShare(x, f) {
 
 async function cardImage(cur = current) {
   const { v, fortune } = cur;
-  await fontsReady;
+  await withTimeout(Promise.all([artReady, boxesReady, fontsReady]), 2500); // time-boxed: a slow art, boxes or font load never hangs the share image
   const W = 1080, H = 1920, c = document.createElement('canvas');
   c.width = W; c.height = H;
   const x = c.getContext('2d');
@@ -663,6 +669,12 @@ function watchForNewWorker() {
   const markDirty = () => { formDirty = true; };
   $('#reading-form').addEventListener('input', markDirty);
   $('#reading-form').addEventListener('change', markDirty);
+  $('#reading-form').addEventListener('focusin', markDirty); // focused but nothing typed yet still counts as touched
+  $('#reading-form').addEventListener('pointerdown', markDirty);
+  document.addEventListener('visibilitychange', () => { // a phone coming back to the page asks for a new release (best effort)
+    if (document.visibilityState !== 'visible') return;
+    try { navigator.serviceWorker.getRegistration().then((reg) => reg && reg.update()).catch(() => {}); } catch { /* never throws */ }
+  });
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (reloaded || busy) return;
     const quiet = !$('#landing').hidden || (!$('#form').hidden && !formDirty);

@@ -77,3 +77,26 @@ test('a new release does not reload a form where a dish is ticked but no name is
     writeFileSync(SW, original);
   }
 });
+
+test('a new release does not reload a form that is focused but still empty', async ({ page }) => {
+  const original = readFileSync(SW, 'utf8');
+  let loads = 0;
+  page.on('load', () => { loads++; });
+  try {
+    await page.goto('/');
+    await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+    await page.getByRole('button', { name: 'Pull a card' }).click();
+    await page.getByLabel('Your name').focus();
+    await expect(page.getByLabel('Your name')).toHaveValue('');
+    const before = loads;
+    writeFileSync(SW, original.replace(/const VERSION = '[^']*';/, "const VERSION = 'fff-test-next-release-4';"));
+    await page.evaluate(async () => { const reg = await navigator.serviceWorker.getRegistration(); await reg.update(); });
+    await expect.poll(() => page.evaluate(() => caches.keys().then((k) => k.includes('fff-test-next-release-4')))).toBe(true);
+    await page.waitForTimeout(1200);
+    expect(loads).toBe(before);
+  } finally {
+    writeFileSync(SW, original);
+  }
+});
