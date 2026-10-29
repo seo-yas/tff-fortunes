@@ -655,13 +655,17 @@ function init() {
 }
 
 // A phone that already runs this page picks up a new release on its next quiet moment: one reload, and only from the landing
-// screen or an untouched form, so a typed name or a draw in flight is never lost. Otherwise the next visit is the new one.
+// screen or an untouched form (no input or change event on it), so anything typed or ticked, or a draw in flight, is never lost. Otherwise the next visit is the new one.
 function watchForNewWorker() {
   if (!navigator.serviceWorker.controller) return; // first install: nothing old to replace
   let reloaded = false;
+  let formDirty = false; // any touch of the form (dish, rating, birthday, email, name) marks it; only a page load clears it
+  const markDirty = () => { formDirty = true; };
+  $('#reading-form').addEventListener('input', markDirty);
+  $('#reading-form').addEventListener('change', markDirty);
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if (reloaded || busy) return;
-    const quiet = !$('#landing').hidden || (!$('#form').hidden && !$('#f-name').value);
+    const quiet = !$('#landing').hidden || (!$('#form').hidden && !formDirty);
     if (!quiet) return;
     reloaded = true;
     location.reload();

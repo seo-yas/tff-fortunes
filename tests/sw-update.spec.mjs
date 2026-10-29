@@ -53,3 +53,27 @@ test('a new release does not reload a form the guest has started typing in', asy
     writeFileSync(SW, original);
   }
 });
+
+test('a new release does not reload a form where a dish is ticked but no name is typed', async ({ page }) => {
+  const original = readFileSync(SW, 'utf8');
+  let loads = 0;
+  page.on('load', () => { loads++; });
+  try {
+    await page.goto('/');
+    await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+    await page.reload();
+    await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+    await page.getByRole('button', { name: 'Pull a card' }).click();
+    await page.locator('input[name="dish"]').first().check({ force: true });
+    await expect(page.getByLabel('Your name')).toHaveValue('');
+    const before = loads;
+    writeFileSync(SW, original.replace(/const VERSION = '[^']*';/, "const VERSION = 'fff-test-next-release-3';"));
+    await page.evaluate(async () => { const reg = await navigator.serviceWorker.getRegistration(); await reg.update(); });
+    await expect.poll(() => page.evaluate(() => caches.keys().then((k) => k.includes('fff-test-next-release-3')))).toBe(true);
+    await page.waitForTimeout(1200);
+    expect(loads).toBe(before);
+    await expect(page.locator('input[name="dish"]').first()).toBeChecked();
+  } finally {
+    writeFileSync(SW, original);
+  }
+});
