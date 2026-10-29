@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { writeFileSync } from 'node:fs';
+import { writeFileSync, readFileSync } from 'node:fs';
+
+const READINGS = JSON.parse(readFileSync('engine/readings.json', 'utf8'));
 
 const ENDPOINT = 'https://script.google.com/macros/s/TEST/exec';
 const COLUMNS = ['submitted_at', 'name', 'email', 'news_opt_in', 'birthday', 'sign', 'rating', 'dishes',
@@ -44,15 +46,23 @@ test('full flow at 390x844: form, draw, reading, row sent to the Sheet', async (
   await fillAndRead(page);
   await expect(page.locator('#r-name')).toHaveText('Marguerite');
   await expect(page.locator('#r-title')).not.toBeEmpty();
-  expect(await page.locator('#r-lines p').count()).toBeGreaterThan(2);
+  await expect(page.locator('#r-modeled')).toHaveText(/^Modeled by Sgt\. (Peppers|Sushi|Peppers & Sgt\. Sushi)$/);
+  await expect(page.locator('#r-tagline')).not.toBeEmpty();
+  await expect(page.locator('#r-text')).not.toBeEmpty();
+  await expect(page.locator('#r-closing')).not.toBeEmpty();
   await expect(page.locator('#r-omen')).not.toBeEmpty();
+  // the reading is Jess's fixed text for the drawn card, verbatim
+  const drawn = await page.evaluate(() => window.__fff.current.fortune.cardId);
+  await expect(page.locator('#r-text')).toHaveText(READINGS.cards[drawn].text);
+  await expect(page.locator('#r-tagline')).toHaveText(READINGS.cards[drawn].tagline);
   // Yas, 2026-10-28: the fortune is a cat card even when a dish is ticked; the dish is the second card
   await expect(page.locator('#card-front .art img')).toHaveAttribute('src', /^cards\/cats\/[a-z-]+\.avif$/);
   await expect(page.locator('#r-second .mini img')).toHaveAttribute('src', 'cards/dish/hex.webp');
-  await expect(page.locator('#r-second p')).toContainText('turned over what you ate: Hex & the City');
+  await expect(page.locator('#r-second p')).toHaveText('Your second card: Hex & the City.');
   await expect.poll(() => posts.length).toBe(1);
   const row = posts[0];
-  for (const c of COLUMNS) expect(row, c).toHaveProperty(c);
+  for (const c of COLUMNS) { expect(row, c).toHaveProperty(c); expect(row[c], c).not.toBeUndefined(); }
+  for (const c of ['card_id', 'card_title', 'fortune_seed']) expect(String(row[c]).length, c).toBeGreaterThan(0);
   expect(row.sign).toBe('Scorpio');
   expect(row.birthday).toBe('10-31');
   expect(row.dish_ways).toBe('hex: Beef');
@@ -210,4 +220,49 @@ test('screens for review', async ({ page }) => {
   await expect(page.locator('#flip')).toHaveClass(/open/, { timeout: 15_000 });
   await page.waitForTimeout(1400);
   await page.screenshot({ path: 'test-results/04-result.png', fullPage: true });
+});
+
+test('the reading never mentions what they ate, their sign or their rating', async ({ page }) => {
+  await page.goto('/');
+  await fillAndRead(page, { dishes: ['hex', 'brodo'], rating: 'Marry it' });
+  const drawn = await page.evaluate(() => window.__fff.current.fortune.cardId);
+  const verbatim = `${READINGS.cards[drawn].tagline} ${READINGS.cards[drawn].text}`.toLowerCase();
+  // everything in the reading article except the second-card caption
+  const text = (await page.locator('#reading').evaluate((el) => {
+    const c = el.cloneNode(true);
+    c.querySelector('#r-second')?.remove();
+    return c.textContent;
+  })).toLowerCase();
+  const names = await page.evaluate(() => [...document.querySelectorAll('#dishes strong')].map((e) => e.textContent));
+  const signs = ['aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo', 'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'];
+  const ratings = ['meh', 'real good', 'marry it'];
+  expect(names.length).toBe(6);
+  for (const w of [...names, ...signs, ...ratings]) {
+    const needle = w.toLowerCase();
+    if (verbatim.includes(needle)) continue; // Jess's own words may say it
+    expect(text, `reading must not contain "${w}"`).not.toContain(needle);
+  }
+});
+
+test('the queued row carries all 15 Code.gs columns, none undefined', async ({ page }) => {
+  await page.addInitScript(() => { globalThis.__FFF_ENDPOINT = 'https://script.google.com/macros/s/NEVER/exec'; });
+  await page.route('https://script.google.com/macros/s/NEVER/exec', (r) => r.abort()); // the row stays queued
+  await page.goto('/');
+  await fillAndRead(page);
+  const row = await page.evaluate(() => window.__fff.queue()[0]);
+  for (const c of COLUMNS) { expect(row, c).toHaveProperty(c); expect(row[c], c).not.toBeUndefined(); }
+  for (const c of ['card_id', 'card_title', 'fortune_seed']) expect(String(row[c]).length, c).toBeGreaterThan(0);
+});
+
+test('a print-QR visit (?s=print) under a controlling service worker queues source "print"', async ({ page }) => {
+  const posts = await mockSheet(page);
+  await page.goto('/');
+  await page.evaluate(async () => { await navigator.serviceWorker.ready; });
+  await page.reload();
+  await expect.poll(() => page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await page.goto('/?s=print');
+  expect(await page.evaluate(() => !!navigator.serviceWorker.controller)).toBe(true);
+  await fillAndRead(page);
+  await expect.poll(() => posts.length).toBe(1);
+  expect(posts[0].source).toBe('print');
 });
